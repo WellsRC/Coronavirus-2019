@@ -39,11 +39,8 @@ for s=0:DI
         pt=0.005.*ones(s+ti,1);
         tempNS(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*LikelihoodMissed(pt);
         tempNSA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
-   end
-   for ti=0:(length(HP)-1)
-        pt=0.005.*ones(s+ti,1);
-        tempNSH(s+1,ti+1)=Ipdf(s+1).*HP(ti+1).*LikelihoodMissed(pt);
-        tempNSHA(s+1,ti+1)=Ipdf(s+1).*HPA(ti+1).*LikelihoodMissed(pt);
+        tempNSH(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*LikelihoodMissed(pt);
+        tempNSHA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
    end
    for cc=0:35
        pt=0.005.*ones(min([s cc]),1);       
@@ -54,8 +51,6 @@ end
 MLE=sum(tempL);
 MLENS=sum(tempNS(:));
 MLENSA=sum(tempNSA(:));
-MLENSH=sum(tempNSH(:));
-MLENSHA=sum(tempNSHA(:));
 
 
 for ii=1:NS
@@ -68,11 +63,6 @@ for ii=1:NS
             tempNS(s+1,ti+1)=IP(s+1).*MP(ti+1).*LikelihoodMissed(pt);
             tempNSA(s+1,ti+1)=IP(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
        end
-       for ti=0:(length(HP)-1)
-            pt=0.005.*ones(s+ti,1);
-            tempNSH(s+1,ti+1)=IP(s+1).*HP(ti+1).*LikelihoodMissed(pt);
-            tempNSHA(s+1,ti+1)=IP(s+1).*HPA(ti+1).*LikelihoodMissed(pt);
-       end
         for cc=0:35
             pt=0.005.*ones(min([cc s]),1);
             LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*LikelihoodMissed(pt); 
@@ -81,8 +71,6 @@ for ii=1:NS
     L(ii)=sum(tempL);
     LNS(ii)=sum(tempNS(:));
     LNSA(ii)=sum(tempNSA(:));
-    LNSH(ii)=sum(tempNSH(:));
-    LNSHA(ii)=sum(tempNSHA(:));
 end
-save('Missed_Screening_TimetoIsolation.mat','L','LNS','LNSA','LNSH','LNSHA','LCT','MLE','MLENS','MLENSA','MLENSH','MLENSHA','MLECT');
+save('Missed_Screening_TimetoIsolation.mat','L','LNS','LNSA','LCT','MLE','MLENS','MLENSA','MLECT');
 

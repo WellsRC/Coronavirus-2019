@@ -1,45 +1,41 @@
-function [IncF, IncOF]=IncidenceData
-
-load('Incidence_Start_Dec292019.mat')
-load('CumulativeIncidence.mat')
-INDX=datenum('01-21-2020')-datenum('12-29-2019')+1;
-TempI=[China(2:end)-China(1:end-1)]'; % Starts Jan. 21 as index starts the 20th
-TempI=[[INDX:(INDX+length(TempI)-1)]' TempI];
-for ii=1:length(Inc(:,1))
-    ff=find(Inc2(:,1)==Inc(ii,1));
-    if(~isempty(ff))
-        Inc(ii,2)=max([Inc(ii,2) Inc2(ff,2)]);
-    end
-    ff=find(TempI(:,1)==Inc(ii,1));
-    if(~isempty(ff))
-        Inc(ii,2)=max([Inc(ii,2) TempI(ff,2)]);
-    end
-end
-Inc=[Inc;TempI(end-3:end,:)];
-TempI=[Other(2:end)-Other(1:end-1)]'; % Starts Jan. 21 as index starts the 20th
-TempI=[[INDX:(INDX+length(TempI)-1)]' TempI];
-
-for ii=1:length(IncO(:,1))
-    ff=find(TempI(:,1)==IncO(ii,1));
-    if(~isempty(ff))
-        IncO(ii,2)=max([IncO(ii,2) TempI(ff,2)]);
+function [IncCF,IncWF,IncOF]=IncidenceData
+ENDINDX=datenum('01-27-2020')-datenum('12-6-2019'); % If we had a data point for Dec 6 it would have the time stamp of day zero, where Dec 8 would have a week index of two
+IncCF=zeros(ENDINDX+1,2); % China 
+IncWF=zeros(ENDINDX+1,2); % Wuhan
+IncOF=zeros(ENDINDX+1,2); % Other
+IncCF(:,1)=[1:ENDINDX+1];
+IncWF(:,1)=[1:ENDINDX+1];
+IncOF(:,1)=[1:ENDINDX+1];
+%% Load time of symptom onset
+load('DailyIncidenceWuhan-NEJM-Dec62019=t0');
+IncWF(WNEJM(:,1)+1,2)=WNEJM(:,2); % Need to add one as the week index for Dec 6 would be zero
+load('DailyIncidenceOther-WHO-Dec62019=t0');
+IncOF(OWHO(:,1)+1,2)=OWHO(:,2);
+%% Reported time of incidence (Adjust backwards based on time of first medical visit since later in the outbreak)
+% Seed random number generator for the results remain consistent
+rng(20200130);
+load('DailyReportedInidenceChina-Affan-Dec62019=t0');
+for ii=1:length(RChinaAffan(:,1))
+    [TH]=TimeMedJan1(RChinaAffan(ii,2));
+    for jj=1:length(TH)
+        IncCF(RChinaAffan(ii,1)-TH(jj)+1,2)=IncCF(RChinaAffan(ii,1)-TH(jj)+1,2)+1;
     end
 end
-IncO=[IncO; TempI(end-1:end,:)];
 
-IncF=zeros(30,2);
-IncOF=zeros(30,2);
-for ii=1:30
-    ff=find(Inc(:,1)==ii);
-    IncF(ii,1)=ii;
-    if(~isempty(ff))
-    	IncF(ii,2)=Inc(ff,2);
-    end
-    
-    ff=find(IncO(:,1)==ii);
-    IncOF(ii,1)=ii;
-    if(~isempty(ff))
-    	IncOF(ii,2)=IncO(ff,2);
+load('DailyReportedInidenceOther-Affan-Dec62019=t0');
+for ii=1:length(ROtherAffan(:,1))
+    [TH]=TimeMedJan1(ROtherAffan(ii,2));
+    for jj=1:length(TH)
+        IncOF(ROtherAffan(ii,1)-TH(jj)+1,2)=IncOF(ROtherAffan(ii,1)-TH(jj)+1,2)+1;
     end
 end
+
+load('DailyReportedInidenceWuhan-Affan-Dec62019=t0');
+for ii=1:length(RWAffan(:,1))
+    [TH]=TimeMedJan1(RWAffan(ii,2));
+    for jj=1:length(TH)
+        IncWF(RWAffan(ii,1)-TH(jj)+1,2)=IncWF(RWAffan(ii,1)-TH(jj)+1,2)+1;
+    end
+end
+
 end
