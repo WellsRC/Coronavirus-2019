@@ -21,12 +21,6 @@ set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'Xtick',[0:4:52],'XTicklabel
 xtickangle(45);
 xlim([0 52])
 
-lP=1-(1-lb).^(0.2.*I);
-uP=flip(1-(1-ub).^(0.2.*I));
-patch([0:52 52:-1:0],[lP' uP'],'r','LineStyle','none','Facealpha',0.3); hold on
-plot([0:52],1-(1-MLE).^(0.2.*I),'r','LineWidth',2);
-
-
 lbA=prctile(LNSH,2.5);
 ubA=prctile(LNSH,97.5);
 
@@ -35,9 +29,14 @@ uP=flip(1-(1-ubA).^(0.5.*I));
 patch([0:52 52:-1:0],[lP' uP'],'b','LineStyle','none','Facealpha',0.3); hold on
 plot([0:52],1-(1-MLENSH).^(0.5.*I),'b','LineWidth',2);
 
+lP=1-(1-lb).^(0.2.*I).*(1-lbA).^(0.2.*0.5.*I);
+uP=flip(1-(1-ub).^(0.2.*I).*(1-ubA).^(0.2.*0.5.*I));
+patch([0:52 52:-1:0],[lP' uP'],'r','LineStyle','none','Facealpha',0.3); hold on
+plot([0:52],1-(1-MLE).^(0.2.*I).*(1-MLENSH).^(0.2.*0.5.*I),'r','LineWidth',2);
+
 text(0.25,0.95,'Developing symptoms','color','k','Fontsize',16);
-text(0.25,0.885,'Superspreader','color','r','Fontsize',16);
-text(0.25,0.82,'Asymptomatic infection','color','b','Fontsize',16);
+text(0.25,0.82,'Superspreader','color','r','Fontsize',16);
+text(0.25,0.885,'Asymptomatic infection','color','b','Fontsize',16);
 
 
 

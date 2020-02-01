@@ -6,10 +6,15 @@ function [I,pdf] = IncubationDist(m,S)
     I=[];
     if(S>0)
         I=round(lognrnd(mu,sigma,S,1));
+        f=find(I>21);
+        while(~isempty(f))
+            I(f)=round(lognrnd(mu,sigma,length(f),1));
+            f=find(I>21);
+        end
     end
-    pdf=[0:42];
+    pdf=[0:21];
     pdf(1)=logncdf(0.5,mu,sigma);
-    pdf(2:43)=logncdf(0.5+[1:42],mu,sigma)-logncdf(0.5+[0:41],mu,sigma);
+    pdf(2:22)=logncdf(0.5+[1:21],mu,sigma)-logncdf(0.5+[0:20],mu,sigma);
     
 end
 

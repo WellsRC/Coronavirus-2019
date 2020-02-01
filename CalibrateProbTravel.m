@@ -1,79 +1,68 @@
+clear;
+[IncC,IncW,IncH,IncO]=IncidenceData;
+NS1=1;
+NS2=10^3;
+T=[];
+TW=[];
+TF=[];
+for ii=1:length(IncC(:,1))
+   T=[T IncC(ii,1).*ones(1,IncC(ii,2))]; 
+end
+for ii=1:length(IncO(:,1))
+   T=[T IncO(ii,1).*ones(1,IncO(ii,2))]; 
+end
+
+for ii=1:length(IncW(:,1))
+   TW=[TW IncW(ii,1).*ones(1,IncW(ii,2))]; 
+end
+
+
+for ii=1:length(IncH(:,1))
+   TF=[TF IncH(ii,1).*ones(1,IncH(ii,2))]; 
+end
+
+IncOutside=IncO(:,2);
 options=optimset('MaxIter',10^6,'TolFun',10^(-16),'TolX',10^(-16),'display','off');
 [gp]=fmincon(@(x)((gaminv(0.025,x(1),5.2./x(1))-4.1).^2+(gaminv(0.975,x(1),5.2./x(1))-7).^2),100,[],[],[],[],0,1000,[],options);
 gaminv(0.025,gp,5.2./gp)
 gaminv(0.975,gp,5.2./gp)
-NS=10^4;
-mun=gamrnd(gp,5.2/gp,NS,1);
-UIpdf=zeros(NS,length(Ipdf));
-for ii=1:NS
-    [,~] = IncubationDist(mun(ii),0);
-end
+mun=gamrnd(gp,5.2/gp,NS1,1);
+
+
+INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
+INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
+INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
+
+minE=-22;%min(E(:));
+maxE=53;
 
 
 
-UxT=repmat([min(T):max(T)],NS1,1);
-UxTN=repmat([min(T):max(T)],NS1,1);
-UxTNS=repmat([min(T):max(T)],NS1,1);
-UP=zeros(NS1,1);
-UPN=zeros(NS1,1);
-UPNS=zeros(NS1,1);
-for nn=1:NS1    
-    G1=R(nn);
-    G2=Pr(nn);
-    IP=nbinrnd(G1,G2,NS2,length(T));
-    E=repmat(T,NS2,1)-IP; 
-    TimeA=zeros(size(E));
-    rt=rand(NS2,length(T));
-    for ii=1:NS2 
-        for jj=1:length(T)
-           ff=find(rt(ii,jj)<=CDFP);
-           ff=ff(end)-1;
-           TimeA(ii,jj)=T(jj)+ff;
+pc=0.001.*[1.3:0.01:5];%linspace(1.3,3.5,101);
+F=zeros(length(pc),1);
+for mm=1:length(pc)
+    UxT=zeros(NS1*NS2,53);
+    IP=zeros(NS1*NS2,length(T)+length(TW)+length(TF));
+    for nn=1:NS1    
+        for ii=1:NS2
+            [IP(ii+NS2.*(nn-1),:),~] = IncubationDist(5.2,length(T)+length(TW)+length(TF));
         end
     end
-    
-    PI=zeros(NS2,length(T));
-    PIN=zeros(NS2,length(T));
-    PINS=zeros(NS2,length(T));
-    PINSTr=zeros(NS2,length(T));
-    SimC=zeros(NS2,length([min(T):max(T)]));
-    
-    for ii=1:NS2
-        for jj=1:length(T)
-            if(E(ii,jj)<=(T(jj)-1)) % Subtract one as T indicates the time of symptoms. Thus for an incubation period of one day [E(ii,jj):(T(jj)-1)] needs to be length 1
-                pt=0.005.*TA([E(ii,jj):(T(jj)-1)]-minE+1);
-                PI(ii,jj)=LikelihoodMissed(pt);
-                pt=0.005.*TAN([E(ii,jj):(T(jj)-1)]-minE+1);
-                PIN(ii,jj)=LikelihoodMissed(pt);      
-                PINSTr(ii,jj)=LikelihoodMissed(pt); % Used in the temporal examination
-                pt=0.005.*TAN([E(ii,jj):min([(TimeA(ii,jj)-1) maxE])]-minE+1);
-                PINS(ii,jj)=LikelihoodMissed(pt);
-            end
-            
-            if(T(jj)<TimeA(ii,jj))
-                d=length([E(ii,jj):(T(jj)-1)]);
-                pt=0.005.*TAN([T(jj):min([(TimeA(ii,jj)-1) maxE])]-minE+1);
-                temp=(1-PINSTr(ii,jj)).*pt; % Probability not traveled during symptomatic period time probability of travel each day during syptoms
-                for tt=2:length(temp)
-                   temp(tt)=temp(tt).*(1-LikelihoodMissed(pt(1:(tt-1))));
-                end
-                SimC(ii,T(jj):min([(TimeA(ii,jj)-1) maxE]))=SimC(ii,T(jj):min([(TimeA(ii,jj)-1) maxE]))+temp;
-            end
-        end
-    end
-    parfor ii=1:length(UxT(nn,:))
-       f=find(T==UxT(nn,ii));
+    E=repmat([T TW TF],NS2*NS1,1)-IP; 
+    TT=[repmat([T],NS2*NS1,1)-1 min(repmat([TW],NS2*NS1,1)-1,INDX-1) min(repmat([TF],NS2*NS1,1)-1,INDX2-1)];
+    D=(TT-E)+1;
+    D(D<0)=0;
+
+    PI=1-(1-pc(mm)).^D;
+    for ii=1:53
+       f=find([T TW TF]==ii);
        if(~isempty(f))
-            UxT(nn,ii)=sum(sum(PI(:,f)))./NS2;
-            UxTN(nn,ii)=sum(sum(PIN(:,f)))./NS2;
-            UxTNS(nn,ii)=sum(sum(PINSTr(:,f),2)+SimC(:,ii))./NS2;
-       else
-           UxT(nn,ii)=0; 
-           UxTN(nn,ii)=0;
-           UxTNS(nn,ii)=sum(SimC(:,ii))./NS2;
+            UxT(:,ii)=sum(PI(:,f),2);
        end
     end    
-    UP(nn)=mean(sum(PI,2));
-    UPN(nn)=mean(sum(PIN,2));
-    UPNS(nn)=mean(sum(PINS,2));
+    M=poisspdf(IncOutside',mean(UxT,1));
+    F(mm)=sum(log(M));
 end
+save('Probability_Travel.mat','F','pc');
+
+plot(pc,F);

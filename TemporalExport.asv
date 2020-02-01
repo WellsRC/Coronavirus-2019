@@ -152,8 +152,8 @@ for ss=1:NS1
        end
     end    
 
-    UMLExTS(ss,:)=mean(UxT,1);
-    UMLETS(ss)=mean(sum(PI,2)); 
+    MLExTS=mean(UxT,1);
+    MLETS=mean(sum(PI,2)); 
 
     % Screening and no travel ban
     E=repmat([T TW TF],NS2,1)-IP; 
@@ -169,8 +169,8 @@ for ss=1:NS1
        end
     end    
 
-    UMLExS(ss,:)=mean(UxT,1);
-    UMLES(ss)=mean(sum(PI,2)); 
+    MLExS=mean(UxT,1);
+    MLES=mean(sum(PI,2)); 
 
     % No screening and no travel ban
 
@@ -201,7 +201,7 @@ for ss=1:NS1
        end
     end    
 
-    UMLEx(ss,:)=mean(UxT,1);
-    UMLE(ss)=mean(sum(PI,2)); 
+    MLEx=mean(UxT,1);
+    MLE=mean(sum(PI,2)); 
 end
 save('Test_Travel_Ban.mat');
