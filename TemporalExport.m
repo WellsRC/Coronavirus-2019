@@ -132,9 +132,17 @@ UMLE=zeros(NS1,1);
 
 %% Uncertainty
 for ss=1:NS1
+    
+    UxT=zeros(NS2,53);
+    IP=zeros(NS2,length(T)+length(TW)+length(TF));
+    ptravel=zeros(NS2,length(T)+length(TW)+length(TF));
+    r=rand(NS2,1);
     % Sample incubation period
     for ii=1:NS2
         [IP(ii,:),~] = IncubationDist(mun(ss),length(T)+length(TW)+length(TF));
+        f=find(r(ii)<=wc);
+        f=f(1);
+        ptravel(ii,:)=pc(f).*ones(1,length(T)+length(TW)+length(TF));
     end
 
     
@@ -196,7 +204,7 @@ for ss=1:NS1
        for mm=1:NS2
           f=find(TempT+TAO(mm,:)>ii);
           g=find(TempT(f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-TempT(f(g)));
+          dt=ptravel(mm,f(g)).*(1-ptravel(mm,f(g))).^(ii-TempT(f(g)));
           UxT(mm,ii)=UxT(mm,ii)+sum(dt);
        end
     end    

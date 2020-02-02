@@ -14,7 +14,7 @@ function [I,pdf] = IncubationDist(m,S)
     end
     pdf=[0:21];
     pdf(1)=logncdf(0.5,mu,sigma);
-    pdf(2:22)=logncdf(0.5+[1:21],mu,sigma)-logncdf(0.5+[0:20],mu,sigma);
-    
+    pdf(2:22)=logncdf(0.5+[1:21],mu,sigma)-logncdf(0.5+[0:20],mu,sigma);    
+    pdf=pdf./sum(pdf);
 end
 

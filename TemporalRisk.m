@@ -38,7 +38,18 @@ text(0.25,0.95,'Developing symptoms','color','k','Fontsize',16);
 text(0.25,0.82,'Superspreader','color','r','Fontsize',16);
 text(0.25,0.885,'Asymptomatic infection','color','b','Fontsize',16);
 
+figure('units','normalized','outerposition',[0 0 1 1]);
 
+load('Weighted_Travel_Inubation.mat');
+
+SS=zeros(length(w),length(I));
+
+for ii=1:length(w)
+   SS(ii,:)= 1-(1-MLE(ii)).^(I');
+end
+
+
+contourf([0:52],w,SS,'LineStyle','none');
 
 
 
