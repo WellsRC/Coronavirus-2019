@@ -49,8 +49,8 @@ for mm=1:length(pc)
         end
     end
     E=repmat([T TW TF],NS2*NS1,1)-IP; 
-    TT=[repmat([T],NS2*NS1,1)-1 min(repmat([TW],NS2*NS1,1)-1,INDX-1) min(repmat([TF],NS2*NS1,1)-1,INDX2-1)];
-    D=(TT-E)+1;
+    TT=[repmat([T],NS2*NS1,1) min(repmat([TW],NS2*NS1,1),INDX) min(repmat([TF],NS2*NS1,1),INDX2)];
+    D=(TT-E);
     D(D<0)=0;
 
     PI=1-(1-pc(mm)).^D;

@@ -40,8 +40,10 @@ text(0.25,0.885,'Asymptomatic infection','color','b','Fontsize',16);
 
 figure('units','normalized','outerposition',[0 0 1 1]);
 
+subplot('Position',[0.065,0.61,0.283865546218487,0.341162790697676]); 
 load('Weighted_Travel_Inubation.mat');
-
+load('Probability_Travel.mat','F','pc');
+ptravel=pc(F==max(F));
 SS=zeros(length(w),length(I));
 
 for ii=1:length(w)
@@ -49,8 +51,14 @@ for ii=1:length(w)
 end
 
 
-contourf([0:52],w,SS,'LineStyle','none');
-
-
-
+contourf([0:52],ptravel.*w,SS,[0:0.05:0.95 0.999],'LineStyle','none');
+box off;
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'Xtick',[0:4:52],'XTicklabel',XTL,'Xminortick','on','Yminortick','on');
+xtickangle(45);
+xlabel('Date of symptom onset','Fontsize',18);
+ylabel('Probability of travel per day','Fontsize',18);
+y=colorbar;
+yh=ylabel(y,'Probability of at least one case exported');
+yh.Rotation=270;
+yh.Position=[4.452698389689128,0.500000476837158,0];
 

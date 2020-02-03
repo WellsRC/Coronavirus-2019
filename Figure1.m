@@ -1,40 +1,77 @@
+clear;
 close all;
-load('Test_Travel_Ban.mat');
-
+CC=[hex2rgb('#9BC01C');hex2rgb('#F5BE41');hex2rgb('#2D4262')];
 figure('units','normalized','outerposition',[0 0 1 1]);
-subplot('Position',[0.710882352941175,0.648680167762309,0.283865546218487,0.341162790697676]); 
-histogram(UMLETS,[0:2:140],'Facecolor','b','LineStyle','none','FaceAlpha',0.3,'Normalization','probability'); hold on
-histogram(UMLES,[0:2:140],'Facecolor','k','LineStyle','none','FaceAlpha',0.3,'Normalization','probability'); hold on
-histogram(UMLE,[0:2:140],'Facecolor','r','LineStyle','none','FaceAlpha',0.3,'Normalization','probability'); hold on
-xlabel('Expected number of cases','Fontsize',18);
-yh=ylabel('Frequency','Fontsize',18);
-legend('Travel restriction','No travel restriction','No Restrictions and no screening');
-legend boxoff;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16);
-box off;
-xlim([0 140]);
+subplot('Position',[0.1,0.64,0.283865546218487,0.341162790697676]); 
+load('Daily_Prob_Expect.mat');
+b=bar([minE:maxE],[MLExTS;MLExS-MLExTS;MLExTNS-(MLExS)]','stacked','LineStyle','none');
 
-startDateofSim = datenum('12-06-2019');% Start date
-
-XTL=datestr([startDateofSim+[0:(length(IncO(:,2))-1)]],'mm-dd-yy');
-subplot('Position',[0.065,0.648680167762309,0.588677688466691,0.341162790697676]); 
-for ii=1:53
-   patch(ii+[-0.35 -0.35 0.35 0.35],prctile(UMLExTS(:,ii),[2.5 97.5 97.5 2.5]),'b','Facealpha',0.3,'LineStyle','none'); hold on
-   plot(ii+linspace(-0.35,0.35,101),MLExTS(ii).*ones(101,1),'b','LineWidth',2); hold on
-   
-   patch(ii+[-0.35 -0.35 0.35 0.35],prctile(UMLExS(:,ii),[2.5 97.5 97.5 2.5]),'k','Facealpha',0.3,'LineStyle','none'); hold on
-   plot(ii+linspace(-0.35,0.35,101),MLExS(ii).*ones(101,1),'k','LineWidth',2); hold on
-   
-   patch(ii+[-0.35 -0.35 0.35 0.35],prctile(UMLEx(:,ii),[2.5 97.5 97.5 2.5]),'r','Facealpha',0.3,'LineStyle','none'); hold on
-   plot(ii+linspace(-0.35,0.35,101),MLEx(ii).*ones(101,1),'r','LineWidth',2); hold on
+for ii=1:length(CC(:,1))
+        b(ii).FaceColor = 'flat';
+        b(ii).CData = CC(ii,:);
 end
-xlim([0.5 length(IncO(:,2))+0.5]);
-scatter([1:length(IncO(:,2))],IncO(:,2),40,'k','filled');
-yh=ylabel({'Expected number of','cases missed'},'Fontsize',18);
-xlabel('Date of symptom onset','Fontsize',18);
+    
+startDateofSim = datenum('12-06-2019');% Start date
+XTL=datestr([startDateofSim+[0:4:(maxE-1)]],'mm-dd-yy');
+yh=ylabel({'Expected number of infected','cases exported from China'},'Fontsize',18);
+xlabel('Date','Fontsize',18);
 box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:length(IncO(:,2))],'XTickLabel',XTL,'YTick',[0:5:30],'Yminortick','on');
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
 xtickangle(45);
-ylim([0 15]);
+xlim([1 53.5])
+ylim([0 8]);
 
-subplot('Position',[0.065,0.648680167762309,0.588677688466691,0.341162790697676]); 
+legend({'Screening and travel ban','Screening and no travel ban','No screening and no travel ban'},'Location','NorthWest');
+legend boxoff;
+text(yh.Extent(1),max(ylim),'A','Fontsize',32,'FontWeight','bold');
+
+subplot('Position',[0.44,0.64,0.283865546218487,0.341162790697676]); 
+plot([minE:maxE],MPTS,'color',CC(1,:),'LineWidth',2); hold on
+plot([minE:maxE],MPS,'color',CC(2,:),'LineWidth',2); hold on
+plot([minE:maxE],MPNS,'color',CC(3,:),'LineWidth',2);
+yh=ylabel({'Probability infected','cases exported from China'},'Fontsize',18);
+xlabel('Date','Fontsize',18);
+box off;
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+xtickangle(45);
+xlim([1 53])
+ylim([0 1]);
+text(yh.Extent(1),max(ylim),'B','Fontsize',32,'FontWeight','bold');
+
+
+
+subplot('Position',[0.1,0.165,0.283865546218487,0.341162790697676]); 
+
+
+plot([minE:maxE],MCPS,'color',CC(2,:),'LineWidth',2);
+xlabel('Date of symptom onset','Fontsize',18);
+yh=ylabel({'Probability at least one','one infected case exported','since 12-06-2019'},'Fontsize',18);
+box off;
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+xtickangle(45);
+xlim([1 53])
+ylim([0 1]);
+text(yh.Extent(1),max(ylim),'C','Fontsize',32,'FontWeight','bold');
+
+subplot('Position',[0.44,0.165,0.283865546218487,0.341162790697676]); 
+[IncC,IncW,IncO]=IncidenceData;
+I=cumsum(IncC(:,2)+IncW(:,2)+IncO(:,2));
+load('Weighted_Travel_Inubation.mat');
+
+
+
+contourf([0:52],ptravel.*w,MLE,[0:0.05:0.95 0.999],'LineStyle','none');
+box off;
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'Xtick',[0:4:52],'XTicklabel',XTL,'Xminortick','on','Yminortick','on');
+xtickangle(45);
+xlabel('Date of symptom onset','Fontsize',18);
+yhh=ylabel('Probability of travel per day','Fontsize',18);
+y=colorbar;
+yh=ylabel(y,{'Probability at least one','one infected case exported','since 12-06-2019'});
+yh.Rotation=270;
+yh.Position=[5.119364897410075,0.500000476837158,0];
+y.Position=[0.730440414490399,0.165225744476465,0.011204481792717,0.341018245100029];
+y.Limits=[0 1];
+load('ColorM','CMC');
+colormap(CMC)
+text(yhh.Extent(1),max(ylim),'D','Fontsize',32,'FontWeight','bold');
