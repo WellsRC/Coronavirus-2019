@@ -34,11 +34,12 @@ wc=cumsum(w);
 ptravel=pc(F==max(F));
 
 
-minE=1;%min(E(:));
-maxE=53;
+minE=-22;%min(E(:));
+maxE=max(IncO(:,1));
 
 %% MLE Estimates
 IP=zeros(NS2,length(T)+length(TW)+length(TF));
+
 
 % Sample incubation period
 for ii=1:NS2
@@ -51,11 +52,18 @@ TNR=repmat([T TW TF],NS2,1);
 
 w=[0:0.005:1];
 MLE=zeros(length(w),length([minE:maxE]));
-for ww=1:length(w)
+MLEP=zeros(length(w),length([minE:maxE]));
+parfor ww=1:length(w)
     
 CPxS=ones(NS2,length([minE:maxE]));
+PxS=ones(NS2,length([minE:maxE]));
     for ii=minE:maxE
        for mm=1:NS2
+           f=find(TNR(mm,:)>ii);
+          g=find(E(mm,f)<=ii);
+          dt=w(ww)*ptravel*(1-w(ww)*ptravel).^(ii-E(mm,f(g)));
+          PxS(mm,ii-(minE)+1)=PxS(mm,ii-(minE)+1).*(1-prod(1-dt));
+      
           gg=find(E(mm,:)<=ii);
           temps=min(TNR(mm,gg),ii+1);
           dts=1-prod((1-ptravel*(w(ww))).^temps);
@@ -63,6 +71,7 @@ CPxS=ones(NS2,length([minE:maxE]));
        end
     end
     MLE(ww,:)=mean(CPxS,1);
+    MLEP(ww,:)=mean(PxS,1);
 end
 
-save('Weighted_Travel_Inubation.mat','MLE','w');
+save('Weighted_Travel_Inubation.mat','MLE','w','MLEP');

@@ -40,7 +40,7 @@ INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the
 INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 
 minE=-22;%min(E(:));
-maxE=53;
+maxE=max(IncC(:,1));
 
 TA=ones(1,length([minE:maxE]));
 TAN=ones(1,length([minE:maxE]));
@@ -133,7 +133,7 @@ UMPTS=zeros(NS1,length(MLExTS));
 UMPS=zeros(NS1,length(MLExTS));
 UMPNS=zeros(NS1,length(MLExTS));
 UMPTNS=zeros(NS1,length(MLExTS));
-for ss=1:NS1
+parfor ss=1:NS1
     UxT=zeros(NS2,length([minE:maxE]));
     UxS=zeros(NS2,length([minE:maxE]));
     UxNS=zeros(NS2,length([minE:maxE]));

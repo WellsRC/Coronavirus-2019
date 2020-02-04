@@ -34,14 +34,14 @@ INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the
 INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 
 minE=-22;%min(E(:));
-maxE=53;
+maxE=max(IncO(:,1));
 
 
 
-pc=0.001.*[1.3:0.01:5];%linspace(1.3,3.5,101);
+pc=0.001.*[2.8:0.01:6.5];%linspace(1.3,3.5,101);
 F=zeros(length(pc),1);
-for mm=1:length(pc)
-    UxT=zeros(NS1*NS2,53);
+parfor mm=1:length(pc)
+    UxT=zeros(NS1*NS2,maxE);
     IP=zeros(NS1*NS2,length(T)+length(TW)+length(TF));
     for nn=1:NS1    
         for ii=1:NS2
@@ -54,7 +54,7 @@ for mm=1:length(pc)
     D(D<0)=0;
 
     PI=1-(1-pc(mm)).^D;
-    for ii=1:53
+    for ii=1:maxE
        f=find([T TW TF]==ii);
        if(~isempty(f))
             UxT(:,ii)=sum(PI(:,f),2);

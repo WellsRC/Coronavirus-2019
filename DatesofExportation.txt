@@ -1,0 +1,11 @@
+South Korea,Jan-22-20,Jan-19-20
+Japan,Jan-23-20,Jan-06-20
+Taiwan,Jan-23-20,Jan-12-20
+United States,Jan-19-20,Jan-15-20
+Philippines,Jan-17-20,Jan-21-20
+Vietnam,Jan-16-20,Jan-13-20
+Singapore,Jan-18-20,Jan-23-20
+Canada,Jan-14-20,Jan-22-20
+France,Jan-10-20,Jan-22-20
+Australia,Jan-16-20,Jan-06-20
+Thailand,Jan-19-20,Jan-08-20
