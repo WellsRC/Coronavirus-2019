@@ -32,23 +32,26 @@ for jj=1:NS1
     UMLE(jj)=pdf*Test;
 end
 
-load('Probability_Travel.mat','F','pc');
+load('Probability_Travel_Infection.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 
 ptravel=pc(F==max(F));
 
-for ii=0:21
+for ii=0:21 % Duration of incubatino period
     t=0;
-   for jj=0:(ii-1)
+   for jj=0:(ii-1) % arival time
        t=t+(ii-jj).*ptravel.*(1-ptravel).^jj./(1-(1-ptravel).^ii);
    end
    Test(ii+1)=t;
 end
 
+
+
 [~,pdf] = IncubationDist(5.2,0);
 
 MLET=pdf*Test;
+
 UMLET=zeros(NS1,1);
 
 for jj=1:NS1    
@@ -60,6 +63,8 @@ NS2=10^6;
 IND1=randi(NS1,NS2,1);
 IND2=randi(NS1,NS2,1);
 TtoT=UMLET(IND1)+UMLE(IND2);
+
+save('Time_After_Arrival.mat');
 
 
 

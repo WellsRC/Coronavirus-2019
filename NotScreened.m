@@ -1,6 +1,6 @@
 %% Use of the serial interval for non-screening
 [~,Ipdf] = IncubationDist(5.2,0);
-load('Probability_Travel.mat','F','pc');
+load('Probability_Travel_Infection.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 
@@ -30,12 +30,14 @@ LNSA=zeros(NS,1);
 LNSH=zeros(NS,1);
 LNSHA=zeros(NS,1);
 LCT=zeros(NS,15);
+LCTIP=zeros(NS,15);
 tempL=zeros(DI+1,1);
 tempNS=zeros(DI+1,DI+1);
 tempNSA=zeros(DI+1,DI+1);
 tempNSH=zeros(DI+1,DI+1);
 tempNSHA=zeros(DI+1,DI+1);
 MLECT=zeros(1,15);
+MLECTIP=zeros(1,15);
 for s=0:DI    
    pt=ptravel.*ones(s,1);
    tempL(s+1)=Ipdf(s+1).*LikelihoodMissed(pt);
@@ -51,7 +53,11 @@ for s=0:DI
    end
    for cc=0:14
        pt=ptravel.*ones(min([s cc]),1);       
-       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*LikelihoodMissed(pt);   
+       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*LikelihoodMissed(pt); 
+       for ti=0:(length(MPA)-1)
+            pt=ptravel.*ones(min([s+ti cc]),1);
+             MLECTIP(cc+1)=MLECTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+       end
    end
 end
 
@@ -87,7 +93,11 @@ for ii=1:NS
        end
         for cc=0:14
             pt=spc(ii).*ones(min([cc s]),1);
-            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*LikelihoodMissed(pt); 
+            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*LikelihoodMissed(pt);  
+               for ti=0:(length(MPA)-1)
+                    pt=ptravel.*ones(min([s+ti cc]),1);
+                     LCTIP(cc+1)=LCTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+               end
         end
     end
     L(ii)=sum(tempL);
@@ -96,5 +106,5 @@ for ii=1:NS
     LNSH(ii)=sum(tempNSH(:));
     LNSHA(ii)=sum(tempNSHA(:));
 end
-save('Missed_Screening_TimetoIsolation.mat','L','LNS','LNSA','LNSH','LNSHA','LCT','MLE','MLENS','MLENSA','MLENSH','MLENSHA','MLECT');
+save('TravelDuringInfection.mat','L','LNS','LNSA','LNSH','LNSHA','LCT','MLE','MLENS','MLENSA','MLENSH','MLENSHA','MLECT','MLECTIP','LCTIP');
 

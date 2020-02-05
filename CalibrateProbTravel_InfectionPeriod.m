@@ -82,4 +82,5 @@ parfor mm=1:length(pc)
 end
 save('Probability_Travel_Infection.mat','F','pc');
 
-plot(pc,F);
+WeightedTravel;
+DailyProbability;
