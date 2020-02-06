@@ -29,8 +29,7 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 20]);
