@@ -1,4 +1,8 @@
 %% Use of the serial interval for non-screening
+load('Weight_Flights.mat','FlightAll')
+tf=strcmp({'China'},{FlightAll{:,1}});
+wtc=1-[FlightAll{tf,2}];
+
 [~,Ipdf] = IncubationDist(5.2,0);
 load('Probability_Travel_Infection.mat','F','pc');
 w=exp(F)./sum(exp(F));
@@ -40,23 +44,23 @@ MLECT=zeros(1,15);
 MLECTIP=zeros(1,15);
 for s=0:DI    
    pt=ptravel.*ones(s,1);
-   tempL(s+1)=Ipdf(s+1).*LikelihoodMissed(pt);
+   tempL(s+1)=Ipdf(s+1).*wtc.*LikelihoodMissed(pt);
    for ti=0:(length(MP)-1)
         pt=ptravel.*ones(s+ti,1);
-        tempNS(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*LikelihoodMissed(pt);
-        tempNSA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+        tempNS(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
+        tempNSA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
    end
    for ti=0:(length(HP)-1)
         pt=ptravel.*ones(s+ti,1);
-        tempNSH(s+1,ti+1)=Ipdf(s+1).*HP(ti+1).*LikelihoodMissed(pt);
-        tempNSHA(s+1,ti+1)=Ipdf(s+1).*HPA(ti+1).*LikelihoodMissed(pt);
+        tempNSH(s+1,ti+1)=Ipdf(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
+        tempNSHA(s+1,ti+1)=Ipdf(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
    end
    for cc=0:14
        pt=ptravel.*ones(min([s cc]),1);       
-       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*LikelihoodMissed(pt); 
+       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*wtc.*LikelihoodMissed(pt); 
        for ti=0:(length(MPA)-1)
             pt=ptravel.*ones(min([s+ti cc]),1);
-             MLECTIP(cc+1)=MLECTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+             MLECTIP(cc+1)=MLECTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
        end
    end
 end
@@ -80,23 +84,23 @@ for ii=1:NS
     IP=UIpdf(ii,:);
     for s=0:DI    
        pt=spc(ii).*ones(s,1);
-       tempL(s+1)=IP(s+1).*LikelihoodMissed(pt);       
+       tempL(s+1)=IP(s+1).*wtc.*LikelihoodMissed(pt);       
        for ti=0:(length(MP)-1)
             pt=spc(ii).*ones(s+ti,1);
-            tempNS(s+1,ti+1)=IP(s+1).*MP(ti+1).*LikelihoodMissed(pt);
-            tempNSA(s+1,ti+1)=IP(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+            tempNS(s+1,ti+1)=IP(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
+            tempNSA(s+1,ti+1)=IP(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
        end
        for ti=0:(length(HP)-1)
             pt=spc(ii).*ones(s+ti,1);
-            tempNSH(s+1,ti+1)=IP(s+1).*HP(ti+1).*LikelihoodMissed(pt);
-            tempNSHA(s+1,ti+1)=IP(s+1).*HPA(ti+1).*LikelihoodMissed(pt);
+            tempNSH(s+1,ti+1)=IP(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
+            tempNSHA(s+1,ti+1)=IP(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
        end
         for cc=0:14
             pt=spc(ii).*ones(min([cc s]),1);
-            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*LikelihoodMissed(pt);  
+            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*wtc.*LikelihoodMissed(pt);  
                for ti=0:(length(MPA)-1)
                     pt=ptravel.*ones(min([s+ti cc]),1);
-                     LCTIP(cc+1)=LCTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*LikelihoodMissed(pt);
+                     LCTIP(cc+1)=LCTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
                end
         end
     end

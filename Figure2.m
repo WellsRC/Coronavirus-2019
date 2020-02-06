@@ -19,7 +19,7 @@ figure('units','normalized','outerposition',[0 0 1 1]);
 
 subplot('Position',[0.045,0.165,0.283865546218487,0.3]); 
 
-b=bar([minE:maxE],[MLExS;MLExNS-(MLExS)]','stacked','LineStyle','none');
+b=bar([minE:maxE],[MLExS;MLExNS-(MLExS)]','stacked','LineStyle','none'); hold on;
 
 for ii=1:2
         b(ii).FaceColor = 'flat';
@@ -29,11 +29,13 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 20]);
 title('No travel ban','Fontsize',18);
-legend({'Incubation','Symptomatic'},'Location','NorthWest');
+legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
@@ -42,7 +44,7 @@ text(yh.Extent(1),max(ylim)*1.1,'D','Fontsize',32,'FontWeight','bold');
 
 subplot('Position',[0.367+0.01,0.165,0.283865546218487,0.3]); 
 
-b=bar([minE:maxE],[MLExTS;MLExTNS-(MLExTS)]','stacked','LineStyle','none');
+b=bar([minE:maxE],[MLExTS;MLExTNS-(MLExTS)]','stacked','LineStyle','none'); hold on
 
 for ii=1:2
         b(ii).FaceColor = 'flat';
@@ -52,11 +54,13 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 20]);
 title('Travel ban','Fontsize',18);
-legend({'Incubation','Symptomatic'},'Location','NorthWest');
+legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
@@ -64,7 +68,7 @@ text(yh.Extent(1),max(ylim)*1.1,'E','Fontsize',32,'FontWeight','bold');
 
 subplot('Position',[0.689+0.02,0.165,0.283865546218487,0.3]); 
 
-b=bar([minE:maxE],[MLExS-MLExTS;(MLExNS-(MLExTNS))-(MLExS-MLExTS)]','stacked','LineStyle','none');
+b=bar([minE:maxE],[MLExS-MLExTS;(MLExNS-(MLExTNS))-(MLExS-MLExTS)]','stacked','LineStyle','none'); hold on;
 
 for ii=1:2
         b(ii).FaceColor = 'flat';
@@ -74,11 +78,13 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 20]);
 title('Cases averted by travel ban','Fontsize',18);
-legend({'Incubation','Symptomatic'},'Location','NorthWest');
+legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
@@ -100,6 +106,8 @@ yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
+plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE])
 ylim([0 1]);
@@ -118,6 +126,8 @@ plot([(INDX):maxE],MCPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2
 LB=prctile(UMCPTNS,2.5);
 UB=flip(prctile(UMCPTNS,97.5));
 patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);
@@ -138,6 +148,8 @@ TT=MCPTNS(2:end)-MCPTNS(1:end-1);
 plot([(minE+1):(INDX)],TT(1:(1+INDX-(minE+1))),'color',CCT(1,:),'LineWidth',2); hold on
 plot([(INDX):maxE],TT((1+INDX-(minE+1)):end),'-.','color',CCT(1,:),'LineWidth',2); hold on
 
+plot([INDX INDX],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
 LB=prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),2.5);
 UB=flip(prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),97.5));

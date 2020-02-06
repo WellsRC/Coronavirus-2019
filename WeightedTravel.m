@@ -1,4 +1,7 @@
 clear;
+load('Weight_Flights.mat','FlightAll')
+tf=strcmp({'China'},{FlightAll{:,1}});
+wtc=1-[FlightAll{tf,2}];
 [IncC,IncW,IncH,IncO]=IncidenceData;
 NS1=10^3;
 NS2=10^3;
@@ -32,7 +35,7 @@ load('Probability_Travel_Infection.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 
-ptravelB=pc(F==max(F));
+ptravel=pc(F==max(F));
 INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
@@ -66,18 +69,18 @@ w=[0:0.0001:0.03];
 MLE=zeros(length(w),length([minE:maxE]));
 MLEP=zeros(length(w),length([minE:maxE]));
 parfor ww=1:length(w)
-    ptravel=ptravelB.*w(ww);
+    wtc=w(ww);
 CPxTNS=ones(NS2,length([minE:maxE]));
 PxTNS=ones(NS2,length([minE:maxE]));
     for ii=minE:maxE
-       for mm=1:NS2
+       for mm=1:NS2           
            f=find(TBNS(mm,:)>ii);
           g=find(E(mm,f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
           gg=find(E(mm,:)<=ii);
           temps=min(TBNS(mm,gg),ii+1);
-          dts=1-prod((1-ptravel).^temps);
+          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
           CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
        end
     end

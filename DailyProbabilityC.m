@@ -1,5 +1,7 @@
 clear;
-
+load('Weight_Flights.mat','FlightAll')
+tf=strcmp({'China'},{FlightAll{:,1}});
+wtc=1-[FlightAll{tf,2}]; % Not to china
 %pobj=parpool(20);
 [IncC,IncW,IncH,IncO]=IncidenceData;
 NS1=10^3;
@@ -83,35 +85,35 @@ for ii=minE:maxE
    for mm=1:NS2
       f=find(TT(mm,:)>ii);
       g=find(E(mm,f)<=ii);
-      dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
       PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
       gg=find(E(mm,:)<=ii);
       temps=min(TT(mm,gg),ii+1);
-      dts=1-prod((1-ptravel).^temps);
+      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
       CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
       
       
       f=find(TNR(mm,:)>ii);
       g=find(E(mm,f)<=ii);
-      dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxS(mm,ii-(minE)+1)=UxS(mm,ii-(minE)+1)+sum(dt);
       PxS(mm,ii-(minE)+1)=PxS(mm,ii-(minE)+1).*(1-prod(1-dt));
       
       f=find(TAO(mm,:)>ii);
       g=find(E(mm,f)<=ii);
-      dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxNS(mm,ii-(minE)+1)=UxNS(mm,ii-(minE)+1)+sum(dt);
       PxNS(mm,ii-(minE)+1)=PxNS(mm,ii-(minE)+1).*(1-prod(1-dt));
       
       f=find(TBNS(mm,:)>ii);
       g=find(E(mm,f)<=ii);
-      dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
       PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
       gg=find(E(mm,:)<=ii);
       temps=min(TBNS(mm,gg),ii+1);
-      dts=1-prod((1-ptravel).^temps);
+      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
       CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
    end
 end    
@@ -144,8 +146,17 @@ UMPTS=zeros(NS1,length(MLExTS));
 UMPS=zeros(NS1,length(MLExTS));
 UMPNS=zeros(NS1,length(MLExTS));
 UMPTNS=zeros(NS1,length(MLExTS));
+r=rand(NS1,1);
+spc=zeros(NS1,1);
+
+for ii=1:NS1
+    f=find(r(ii)<=wc);
+    f=f(1);
+    spc(ii)=pc(f);
+end
+
 parfor ss=1:NS1
-    
+    ptravel=spc(ss);
     UxT=zeros(NS2,length([minE:maxE]));
     UxS=zeros(NS2,length([minE:maxE]));
     UxNS=zeros(NS2,length([minE:maxE]));
@@ -179,35 +190,35 @@ parfor ss=1:NS1
        for mm=1:NS2
           f=find(TT(mm,:)>ii);
           g=find(E(mm,f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
           PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
           gg=find(E(mm,:)<=ii);
           temps=min(TT(mm,gg),ii+1);
-          dts=1-prod((1-ptravel).^temps);
+          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
           CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
 
 
           f=find(TNR(mm,:)>ii);
           g=find(E(mm,f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxS(mm,ii-(minE)+1)=UxS(mm,ii-(minE)+1)+sum(dt);
           PxS(mm,ii-(minE)+1)=PxS(mm,ii-(minE)+1).*(1-prod(1-dt));
 
           f=find(TAO(mm,:)>ii);
           g=find(E(mm,f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxNS(mm,ii-(minE)+1)=UxNS(mm,ii-(minE)+1)+sum(dt);
           PxNS(mm,ii-(minE)+1)=PxNS(mm,ii-(minE)+1).*(1-prod(1-dt));
 
           f=find(TBNS(mm,:)>ii);
           g=find(E(mm,f)<=ii);
-          dt=ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
           PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
           gg=find(E(mm,:)<=ii);
           temps=min(TBNS(mm,gg),ii+1);
-          dts=1-prod((1-ptravel).^temps);
+          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
           CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
        end
     end 
@@ -221,7 +232,7 @@ parfor ss=1:NS1
     UMPNS(ss,:)=mean(PxNS,1);
     UMPTNS(ss,:)=mean(PxTNS,1);
     UMCPTS(ss,:)=mean(CPxTS,1);
-    MCPTNS(ss,:)=mean(CPxTNS,1);
+    UMCPTNS(ss,:)=mean(CPxTNS,1);
 end
 save('Daily_Prob_Expect.mat');
 clear;

@@ -1,3 +1,6 @@
+load('Weight_Flights.mat','FlightAll')
+tf=strcmp({'China'},{FlightAll{:,1}});
+wtc=1-[FlightAll{tf,2}];
 
 NS1=10^4;
 options=optimset('MaxIter',10^6,'TolFun',10^(-16),'TolX',10^(-16),'display','off');
@@ -22,7 +25,7 @@ for mm=1:14
         t=0;
        for jj=0:(ii-1)
            if(jj<=mm)
-            t=t+1.*ptravel.*(1-ptravel).^jj./(1-(1-ptravel).^ii);
+            t=t+1.*wtc.*ptravel.*(1-ptravel).^jj./(wtc.*(1-(1-ptravel).^ii));
            end
        end
        Test(ii+1)=t;
@@ -31,8 +34,14 @@ MLET(mm)=pdf*Test;
 end
 
 
+r=rand(NS1,1);
+spc=zeros(NS1,1);
 
-
+for ii=1:NS1
+    f=find(r(ii)<=wc);
+    f=f(1);
+    spc(ii)=pc(f);
+end
 
 UMLET=zeros(NS1,14);
 for ss=1:NS1    
@@ -42,7 +51,7 @@ for ss=1:NS1
             t=0;
            for jj=0:(ii-1)
                if(jj<=mm)
-                t=t+1.*ptravel.*(1-ptravel).^jj./(1-(1-ptravel).^ii);
+                t=t+1.*wtc.*spc(ss).*(1-spc(ss)).^jj./(wtc.*(1-(1-spc(ss)).^ii));
                end
            end
            Test(ii+1)=t;
