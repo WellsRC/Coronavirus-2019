@@ -60,7 +60,7 @@ E=repmat([T TW TF],NS2,1)-IP;
 %(this preamble was copied were I run all cases serial in the simulatino later)
 TT=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
 
-TT(:,(length(T)+1):(length(T)+length(TW)))=min(TT(:,(length(T)+1):(length(T)+length(TW))),INDX); % Restrict time based on the min of time of first medical and travel ban in wuhan
+TT(:,(length(T)+1):(length(T)+length(TW)))=min(TT(:,(length(T)+1):(length(T)+length(TW))),INDX); % Restrict time based on the min of time of first medical and travel ban in wuhan (Do this because 
 TT(:,(length(T)+length(TW)+1):end)=min(TT(:,(length(T)+length(TW)+1):end),INDX2); % Restrict time based on the min of time of first medical and travel ban in Hubei
 %Used for the tima after symptom onset
 TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
@@ -82,7 +82,7 @@ parfor mm=1:length(pc)
 
     PItemp=wtc.*(1-(1-ptravel).^D); % probability of traveling outside of China
     
-    TempT=[T TW TF];
+    TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction
     for ii=1:maxE
        f=find(TempT==ii);
        if(~isempty(f))

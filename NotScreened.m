@@ -1,24 +1,27 @@
-%% Use of the serial interval for non-screening
+%% Computes the general probabilityes of traveling in incubation or infectious period
+clear;
+% Determine the weight ofr China
 load('Weight_Flights.mat','FlightAll')
 tf=strcmp({'China'},{FlightAll{:,1}});
 wtc=1-[FlightAll{tf,2}];
-
-[~,Ipdf] = IncubationDist(5.2,0);
+% Obtain the pdf for the incubation period
+[~,Ipdf] = IncubationDist(5.2,0); 
+% Obtain the probabaility of travel
 load('Probability_Travel_Infection.mat','F','pc');
-w=exp(F)./sum(exp(F));
-wc=cumsum(w);
-
-ptravel=pc(F==max(F));
+w=exp(F)./sum(exp(F)); % likelihood weight
+wc=cumsum(w); % cumulative sum ofr sampling
+ptravel=pc(F==max(F)); % Set travel probabaility
+% Fit the gamma distribtuion for the sampling of the mean
 options=optimset('MaxIter',10^6,'TolFun',10^(-16),'TolX',10^(-16),'display','off');
 [gp]=fmincon(@(x)((gaminv(0.025,x(1),5.2./x(1))-4.1).^2+(gaminv(0.975,x(1),5.2./x(1))-7).^2),100,[],[],[],[],0,1000,[],options);
-gaminv(0.025,gp,5.2./gp)
-gaminv(0.975,gp,5.2./gp)
 NS=10^4;
 mun=gamrnd(gp,5.2/gp,NS,1);
+% Get he pdf for the different distribution
 UIpdf=zeros(NS,length(Ipdf));
 for ii=1:NS
     [~,UIpdf(ii,:)] = IncubationDist(mun(ii),0);
 end
+% Obtaine the pdfs for the different measures 
 load('TimetoMedVisituptoDec31.mat','D')
 MP=D(:,2)./sum(D(:,2));
 load('TimetoMedVisitJan1onward.mat','D')
@@ -27,7 +30,9 @@ load('TimetoHospitaluptoDec31.mat','D')
 HP=D(:,2)./sum(D(:,2));
 load('TimetoHospitalJan1onward.mat','D')
 HPA=D(:,2)./sum(D(:,2));
-DI=21;
+
+% Initialize 
+DI=21; % suratino of incubation period max evalaution
 L=zeros(NS,1);
 LNS=zeros(NS,1);
 LNSA=zeros(NS,1);
@@ -42,6 +47,8 @@ tempNSH=zeros(DI+1,DI+1);
 tempNSHA=zeros(DI+1,DI+1);
 MLECT=zeros(1,15);
 MLECTIP=zeros(1,15);
+
+% Calculate averages for mle
 for s=0:DI    
    pt=ptravel.*ones(s,1);
    tempL(s+1)=Ipdf(s+1).*wtc.*LikelihoodMissed(pt);
@@ -71,6 +78,7 @@ MLENSA=sum(tempNSA(:));
 MLENSH=sum(tempNSH(:));
 MLENSHA=sum(tempNSHA(:));
 
+% Sample travel probability
 r=rand(NS,1);
 spc=zeros(NS,1);
 
@@ -80,6 +88,7 @@ for ii=1:NS
     spc(ii)=pc(f);
 end
 
+% Run average for the uncertainty
 for ii=1:NS
     IP=UIpdf(ii,:);
     for s=0:DI    

@@ -82,7 +82,7 @@ parfor mm=1:length(pc)
 
     PItemp=wtc.*(1-(1-ptravel).^D); % probability of traveling outside of China
     
-    TempT=[T TW TF];
+    TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction
     for ii=1:maxE
        f=find(TempT==ii);
        if(~isempty(f))
