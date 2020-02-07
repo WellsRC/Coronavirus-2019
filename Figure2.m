@@ -32,7 +32,7 @@ set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLab
 
 xtickangle(45);
 xlim([1 maxE+0.5])
-ylim([0 20]);
+ylim([0 25]);
 title('No travel ban','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
@@ -53,11 +53,11 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX INDX],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
-ylim([0 20]);
+ylim([0 25]);
 title('Travel ban','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
@@ -77,11 +77,11 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 20],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX INDX],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
-ylim([0 20]);
+ylim([0 25]);
 title('Cases averted by travel ban','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;

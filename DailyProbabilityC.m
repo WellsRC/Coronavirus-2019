@@ -1,57 +1,66 @@
+% Runs analysis for Figure 1
 clear;
+% Determine the weight for flgihts outside of China
 load('Weight_Flights.mat','FlightAll')
 tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % Not to china
-%pobj=parpool(20);
+wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+% Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
-NS1=10^3;
-NS2=10^3;
-T=[];
-TW=[];
-TF=[];
+% Number of samples to generate
+NS1=10^3; 
+NS2=10^3; 
+
+% Time vectors for symptoms onset
+T=[]; % Outside wuhan and Hubei
+TW=[]; % In Wuhan
+TF=[]; % In Hubei
+% Set the time of symptom onset for each case (Note: Day index 1 correspnds to Dec 6)
+%China (outside Wuhan and Hubei)
 for ii=1:length(IncC(:,1))
    T=[T IncC(ii,1).*ones(1,IncC(ii,2))]; 
 end
+% International cases
 for ii=1:length(IncO(:,1))
    T=[T IncO(ii,1).*ones(1,IncO(ii,2))]; 
 end
-
+%Wuhan
 for ii=1:length(IncW(:,1))
    TW=[TW IncW(ii,1).*ones(1,IncW(ii,2))]; 
 end
-
-
+%Hubeia
 for ii=1:length(IncH(:,1))
    TF=[TF IncH(ii,1).*ones(1,IncH(ii,2))]; 
 end
-IncOutside=IncO(:,2);
+
+% Estimates paramter for gamma with mean 5.2 
 options=optimset('MaxIter',10^6,'TolFun',10^(-16),'TolX',10^(-16),'display','off');
 [gp]=fmincon(@(x)((gaminv(0.025,x(1),5.2./x(1))-4.1).^2+(gaminv(0.975,x(1),5.2./x(1))-7).^2),100,[],[],[],[],0,1000,[],options);
-gaminv(0.025,gp,5.2./gp)
-gaminv(0.975,gp,5.2./gp)
 mun=gamrnd(gp,5.2/gp,NS1,1);
 
-
+% loads calibrated prob of travel
 load('Probability_Travel_Infection.mat','F','pc');
-w=exp(F)./sum(exp(F));
-wc=cumsum(w);
+w=exp(F)./sum(exp(F)); % Calcualted likelihood wieght
+wc=cumsum(w); % cumualtive sum for smapling
 
-ptravel=pc(F==max(F));
+ptravel=pc(F==max(F)); % mle
 
 
-INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
+% Index times of Key events
+%Lockdown Wuhan
+INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero 
+% Lockdown Hubei
 INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
+%Switch in in distribution for time to seek medical
 INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 
+% Minimum day index (as we sample back for Exposed period
 minE=-22;%min(E(:));
-maxE=max(IncC(:,1));
+% Maximim index
+maxE=max(IncO(:,1));
 
-TA=ones(1,length([minE:maxE]));
-TAN=ones(1,length([minE:maxE]));
-TA(INDX-minE:end)=0;
 
 %% MLE Estimates
-
+% Initialize for reuslts 
 UxT=zeros(NS2,length([minE:maxE]));
 UxS=zeros(NS2,length([minE:maxE]));
 UxNS=zeros(NS2,length([minE:maxE]));
@@ -65,10 +74,12 @@ CPxTNS=ones(NS2,length([minE:maxE]));
 PxNS=ones(NS2,length([minE:maxE]));
 PxTNS=ones(NS2,length([minE:maxE]));
 
-% Sample incubation period
+% Sample duration of the incubation period
+IP=zeros(NS2,length(T)+length(TW)+length(TF));
 for ii=1:NS2
-    [IP(ii,:),~] = IncubationDist(5.2,length(T)+length(TW)+length(TF));
+    [IP(ii,:),~] = IncubationDist(5.2,length(T)+length(TW)+length(TF)); % Samples from rounded log-normal with a mean of 5.2
 end
+
 
 % Travel Ban and screening
 E=repmat([T TW TF],NS2,1)-IP; 
@@ -89,7 +100,7 @@ for ii=minE:maxE
       UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
       PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
       gg=find(E(mm,:)<=ii);
-      temps=min(TT(mm,gg),ii+1);
+      temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0);
       dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
       CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
       
@@ -112,7 +123,7 @@ for ii=minE:maxE
       UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
       PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
       gg=find(E(mm,:)<=ii);
-      temps=min(TBNS(mm,gg),ii+1);
+      temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0);
       dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
       CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
    end
@@ -187,14 +198,14 @@ parfor ss=1:NS1
     TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
     TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
     for ii=minE:maxE
-       for mm=1:NS2
+       for mm=1:NS2          
           f=find(TT(mm,:)>ii);
           g=find(E(mm,f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
           PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
           gg=find(E(mm,:)<=ii);
-          temps=min(TT(mm,gg),ii+1);
+          temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0);
           dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
           CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
 
@@ -217,7 +228,7 @@ parfor ss=1:NS1
           UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
           PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
           gg=find(E(mm,:)<=ii);
-          temps=min(TBNS(mm,gg),ii+1);
+          temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0);
           dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
           CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
        end
