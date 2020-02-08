@@ -62,13 +62,20 @@ plot([MLET MLET],[355 365], 'k','LineWidth',2);
 text(mean([MLET MLET+MLE]), 380, [num2str(round(MLE,1)) ,' days'],'Fontsize',16,'HorizontalAlignment','center');
 load('ArrivalToSymptomOnset.mat');
 C=unique(ATtoSO);
+mm=0;
+for ii=1:length(C)   
+    f=find(ATtoSO==C(ii)); 
+    if(length(f)>mm)
+        mm=length(f);
+    end
+end
+ dy=linspace(87.500,262.5000,mm);
 for ii=1:length(C)
-    f=find(ATtoSO==C(ii));
-    dy=linspace(87.500,262.5000,length(f));
+    f=find(ATtoSO==C(ii)); 
     if(C(ii)<=0)
-        scatter(C(ii).*ones(length(f),1),dy,40,CC(1,:),'filled');
+        scatter(C(ii).*ones(length(f),1),dy(1:length(f)),40,CC(1,:),'filled');
     else
-        scatter(C(ii).*ones(length(f),1),dy,40,CC(1,:),'filled');
+        scatter(C(ii).*ones(length(f),1),dy(1:length(f)),40,CIP(1,:),'filled');
     end
 end
 text(-4.53,max(ylim)*1.1,'D','Fontsize',32,'FontWeight','bold');

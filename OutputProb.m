@@ -73,7 +73,7 @@ lb=prctile(UMPTNS,2.5);
 ub=prctile(UMPTNS,97.5);
 flb=find(lb>0.95,1);
 fub=find(ub>0.95,1);
-fprintf(['Daily probability freater than 95%%:' [datestr([startDateofSim+(tt(f)-1)],'mmm-dd-yy') ] '(' [[datestr([startDateofSim+(tt(fub)-1)],'mmm-dd-yy') ] ' to ' [datestr([startDateofSim+(tt(flb)-1)],'mmm-dd-yy') ] ') \n' ]]);
+fprintf(['Daily probability greater than 95%%:' [datestr([startDateofSim+(tt(f)-1)],'mmm-dd-yy') ] '(' [[datestr([startDateofSim+(tt(fub)-1)],'mmm-dd-yy') ] ' to ' [datestr([startDateofSim+(tt(flb)-1)],'mmm-dd-yy') ] ') \n' ]]);
 
 PP=MCPTNS(2:end)-MCPTNS(1:end-1);
 T=[(minE+1):maxE]*PP';
@@ -116,6 +116,9 @@ load('TravelDuringInfection.mat','MLECT','LCT','MLE','L');
 pr=(MLE-MLECT(6))./MLE; % Use index 6 as the contact tracing started at zero
 temp=(L-LCT(:,6))./L; % Use index 6 as the contact tracing started at zero
 fprintf('Percentage reduction if isolated at five days: %3.1f %% (95%% CI:  %3.1f %% - %3.1f %% ) \n',100.*[pr prctile(temp,[2.5 97.5])]);
+pr=(MLE-MLECT(11))./MLE; % Use index 6 as the contact tracing started at zero
+temp=(L-LCT(:,11))./L; % Use index 6 as the contact tracing started at zero
+fprintf('Percentage reduction if isolated at 10 days: %3.1f %% (95%% CI:  %3.1f %% - %3.1f %% ) \n',100.*[pr prctile(temp,[2.5 97.5])]);
 clear;
 load('Time_After_Arrival.mat');
 fprintf('Average time from arrrival to symptom onset: %2.1f (95%% CI: %2.1f - %2.1f) \n',[MLET prctile(UMLET,[2.5 97.5])]);
@@ -126,7 +129,8 @@ load('ArrivalToSymptomOnset.mat')
 n=length(ATtoSO(ATtoSO>0));
 mue=mean(ATtoSO(ATtoSO>0));
 strd=std(ATtoSO(ATtoSO>0));
-fprintf('Average time from arrrival to symptom onset (Emperical): Mean = %2.1f, Stand. Dev.=%2.1f (N=%d) \n',[mue strd n]);
+fprintf('Average time from arrrival in incubation to symptom onset (Emperical): Mean = %2.1f, Stand. Dev.=%2.1f (N=%d) \n',[mue strd n]);
+fprintf('Percentage of cases arriving in incubation: %3.1f%% (N= %d) \n',[100.*[n./length(ATtoSO) ] length(ATtoSO)]);
 clear;
 
 clear;

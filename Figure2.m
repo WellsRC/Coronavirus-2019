@@ -32,7 +32,7 @@ set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLab
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 25]);
-title('No travel ban','Fontsize',18);
+title('No travel lockdown','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
@@ -57,7 +57,7 @@ plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 25]);
-title('Travel ban','Fontsize',18);
+title('Travel lockdown','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
@@ -81,7 +81,7 @@ plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 25]);
-title('Cases averted by travel ban','Fontsize',18);
+title('Cases averted by travel lockdown','Fontsize',18);
 legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
@@ -96,9 +96,9 @@ plot([minE:(INDX)],MPTNS(1:(1+INDX-minE)),'color',CCT(1,:),'LineWidth',2); hold 
 %plot([(INDX):maxE],MPTS((1+INDX-minE):end),'-.','color',CC(1,:),'LineWidth',2); hold on
 plot([(INDX):maxE],MPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2); 
 
-% LB=prctile(UMPTNS,2.5);
-% UB=flip(prctile(UMPTNS,97.5));
-% patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+LB=prctile(UMPTNS,2.5);
+UB=flip(prctile(UMPTNS,97.5));
+patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);
@@ -121,9 +121,9 @@ subplot('Position',[0.367+0.01,0.64,0.283865546218487,0.3]);
 plot([minE:(INDX)],MCPTNS(1:(1+INDX-minE)),'color',CCT(1,:),'LineWidth',2); hold on
 plot([(INDX):maxE],MCPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2); hold on
 
-% LB=prctile(UMCPTNS,2.5);
-% UB=flip(prctile(UMCPTNS,97.5));
-% patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+LB=prctile(UMCPTNS,2.5);
+UB=flip(prctile(UMCPTNS,97.5));
+patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
 plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
@@ -149,9 +149,9 @@ plot([(INDX):maxE],TT((1+INDX-(minE+1)):end),'-.','color',CCT(1,:),'LineWidth',2
 plot([INDX INDX],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
-% LB=prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),2.5);
-% UB=flip(prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),97.5));
-% patch([[(minE+1):maxE] flip([(minE+1):maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+LB=prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),2.5);
+UB=flip(prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),97.5));
+patch([[(minE+1):maxE] flip([(minE+1):maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);

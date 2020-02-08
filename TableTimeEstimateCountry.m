@@ -1,9 +1,10 @@
 clc;
-load('Weight_Flights');
+
 minE=-22;
 maxE=57;
 EsT=zeros(10,5);
     load(['Weighted_Travel_Infectious_Country.mat']);
+    load('Weight_Flights');
     for ii=1:length(FC)
         tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
         wt=FlightAll{tf,2};

@@ -77,12 +77,12 @@ parfor mm=1:length(pc)
     ptravel=pc(mm); % set the travel probability
     UxT=zeros(NS1*NS2,maxE);
 
-    D=(TT-E); % Calcualte the duration of the incubation period
+    D=(TT-E); % Calcualte the duration of the incubation period (Note: Recall TT was truncated for the travel ban)
     D(D<0)=0; % This ensures exposed people cannot leave during travel ban
 
     PItemp=wtc.*(1-(1-ptravel).^D); % probability of traveling outside of China
     
-    TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction
+    TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction a exposed people can travel before the travel ban and then show symptoms
     for ii=1:maxE
        f=find(TempT==ii);
        if(~isempty(f))

@@ -100,4 +100,4 @@ parfor ww=1:length(w)
     MLEP(ww,:)=mean(PxTNS,1);
 end
 
-    save(['Weighted_Travel_Infectious_Country.mat'],'MLE','w','MLEP']);
+    save(['Weighted_Travel_Infectious_Country.mat'],'MLE','w','MLEP');
