@@ -51,7 +51,7 @@ ax1=gca;
 ax1.YAxis.Visible = 'off';
 ylim([0 380]);
 xlim([-3 9]);
-set(gca,'LineWidth',2,'tickdir','out','XTick',[-3:9],'XTickLabel',{'','','','Arrival','','','Symptom on set','','','','First transmission event','',''},'Fontsize',18);
+set(gca,'LineWidth',2,'tickdir','out','XTick',[-3:9],'XTickLabel',{'','','','Arrival','','','Symptom onset','','','','First transmission event','',''},'Fontsize',18);
 plot(linspace(0,MLET,2),[360 360], 'k','LineWidth',2); 
 text(mean([0 MLET]), 380, [num2str(round(MLET,1)) ,' days'],'Fontsize',16,'HorizontalAlignment','center');
 plot([0 0],[355 365], 'k','LineWidth',2); 

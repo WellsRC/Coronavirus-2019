@@ -90,7 +90,8 @@ ub=prctile(PPU,97.5);
 flb=find(lb==max(lb),1);
 fub=find(ub==max(ub),1);
 fprintf(['Max. Likelihood date of first exportation:' [datestr([startDateofSim+(tt(f)-1)],'mmm-dd-yy') ] '(' [[datestr([startDateofSim+(tt(flb)-1)],'mmm-dd-yy') ] ' to ' [datestr([startDateofSim+(tt(fub)-1)],'mmm-dd-yy') ] ') \n' ]]);
-
+TBIndx= datenum('01-23-2020');% The week of our first data point (October 3, 2016)
+fprintf('Max. Likelihood days before lockdown: %3.0f (95%% CI: %3.0f - %3.0f) \n', TBIndx-[startDateofSim+(tt(f)-1) startDateofSim+(tt(fub)-1) startDateofSim+(tt(flb)-1)]);
 NI=sum(IncC(:,2)+IncW(:,2)+IncH(:,2)+IncO(:,2));
 Temp2=sum(UMLExTNS,2);
 fprintf('Percentage of all infections travel over infectious period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTNS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
@@ -100,7 +101,36 @@ Temp2=sum(UMLExTS,2);
 fprintf('Percentage of all infections travel over incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
 Temp2=sum(UMLExS,2);
 fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
+
+EndDateofSim = datenum('1-31-2020');
+TB = datenum('01-23-2020');% Start date
+NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
+T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);
+UT=cumsum(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
+UNT=cumsum(UMLExNS(:,end-(EndDateofSim-TB):end),2);
+MM=zeros(1000,1);
+LL=zeros(1000,1);
+fNT=find(NT>50,1);
+fT=find(T>50,1);
+for ii=1:1000
+MM(ii)=find(UNT(ii,:)>50,1);
+LL(ii)=find(UT(ii,:)>50,1);
+end
+BD=prctile(LL,[2.5 97.5]);
+fprintf(['Date exceed 50 cases Travel ban:' datestr([TB+(fT-1)],'mmm-dd-yy') '(95%% CI: ' datestr([TB+(BD(1)-1)],'mmm-dd-yy') ' - ' datestr([TB+(BD(2)-1)],'mmm-dd-yy') '\n']);
+BD=prctile(MM,[2.5 97.5]);
+fprintf(['Date exceed 50 cases No travel ban:' datestr([TB+(fNT-1)],'mmm-dd-yy') '(95%% CI: ' datestr([TB+(BD(1)-1)],'mmm-dd-yy') ' - ' datestr([TB+(BD(2)-1)],'mmm-dd-yy') '\n']);
+
+NT=mean(MLExNS(end-(EndDateofSim-TB):end),2);
+T=mean(MLExTNS(end-(EndDateofSim-TB):end),2);
+
+UT=mean(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
+UNT=mean(UMLExNS(:,end-(EndDateofSim-TB):end),2);
+fprintf(['Cases per day Travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[T prctile(UT,[2.5 97.5])]);
+fprintf(['Cases per day No travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[NT prctile(UNT,[2.5 97.5])]);
+
 clear;
+
 %% Interventions
 fprintf('============================================================ \n');
 fprintf('Interventions \n');
@@ -135,3 +165,94 @@ clear;
 
 clear;
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%5
+%% SI
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+fprintf('============================================================ \n');
+fprintf('Epidemic (Hosptialization)\n');
+fprintf('============================================================ \n');
+startDateofSim = datenum('12-06-2019');% Start date
+load('Daily_Prob_Expect_Hospt.mat');
+Temp=sum(UMLExTS,2);
+Temp2=sum(UMLExTNS,2);
+fprintf('Percentage of exported travel during incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./sum(MLExTNS) prctile(Temp./Temp2,[2.5 97.5])],1));
+Temp=sum(UMLExS,2);
+Temp2=sum(UMLExNS,2);
+fprintf('Percentage of exported travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./sum(MLExNS) prctile(Temp./Temp2,[2.5 97.5])],1));
+Temp2=(sum(UMLExTNS,2));
+fprintf('Cases exported (Travel Ban): %d (95%% CI: %d - %d) \n', [round(sum(MLExTNS)) round(prctile(Temp2,[2.5 97.5]))]);
+Temp2=(sum(UMLExNS,2));
+fprintf('Cases exported (No travel Ban): %d (95%% CI: %d - %d) \n', [round(sum(MLExNS)) round(prctile(Temp2,[2.5 97.5]))]);
+Temp=round(sum(UMLExTNS,2));
+Temp2=round(sum(UMLExNS,2));
+fprintf('Cases averterd through travel ban: %d (95%% CI: %d - %d) \n', [round(sum(MLExNS))-round(sum(MLExTNS)) round(prctile(Temp2-Temp,[2.5 97.5]))]);
+fprintf('Percentage of cases averterd through travel ban: %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', [100.*(round(sum(MLExNS))-round(sum(MLExTNS)))./round(sum(MLExNS)) (100.*prctile((Temp2-Temp)./Temp2,[2.5 97.5]))]);
+Temp=round(sum(UMLExTS,2));
+Temp2=round(sum(UMLExTNS,2));
+fprintf('Cases averted through screening (Travel Ban): %d (95%% CI: %d - %d) \n', [round(sum(MLExTNS))-round(sum(MLExTS)) prctile(Temp2-Temp,[2.5 97.5])]);
+Temp=round(sum(UMLExS,2));
+Temp2=round(sum(UMLExNS,2));
+fprintf('Cases averted through screening (No travel Ban): %d (95%% CI: %d - %d) \n', [round(sum(MLExNS))-round(sum(MLExS)) prctile(Temp2-Temp,[2.5 97.5])]);
+tt=[minE:maxE];
+f=find(MPTNS>0.95,1);
+lb=prctile(UMPTNS,2.5);
+ub=prctile(UMPTNS,97.5);
+flb=find(lb>0.95,1);
+fub=find(ub>0.95,1);
+fprintf(['Daily probability greater than 95%%:' [datestr([startDateofSim+(tt(f)-1)],'mmm-dd-yy') ] '(' [[datestr([startDateofSim+(tt(fub)-1)],'mmm-dd-yy') ] ' to ' [datestr([startDateofSim+(tt(flb)-1)],'mmm-dd-yy') ] ') \n' ]]);
+
+PP=MCPTNS(2:end)-MCPTNS(1:end-1);
+T=[(minE+1):maxE]*PP';
+V=sqrt([(minE+1):maxE].^2*PP'-T^2);
+PPU=UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1);
+TU=[(minE+1):maxE]*PPU';
+VU=sqrt([(minE+1):maxE].^2*PPU'-TU.^2);
+fprintf(['Expected date of first exportation:' datestr(startDateofSim+(T-1),'yyyy-mm-dd') '(95%% CI: ' datestr(startDateofSim+(prctile(TU,2.5)-1),'yyyy-mm-dd') ' to ' datestr(startDateofSim+(prctile(TU,97.5)-1),'yyyy-mm-dd') ') +/- %2.1f (95%% CI: %2.1f - %2.1f) \n'],[V prctile(VU,[2.5 97.5])])
+
+f=find(PP==max(PP));
+
+lb=prctile(PPU,2.5);
+ub=prctile(PPU,97.5);
+flb=find(lb==max(lb),1);
+fub=find(ub==max(ub),1);
+fprintf(['Max. Likelihood date of first exportation:' [datestr([startDateofSim+(tt(f)-1)],'mmm-dd-yy') ] '(' [[datestr([startDateofSim+(tt(flb)-1)],'mmm-dd-yy') ] ' to ' [datestr([startDateofSim+(tt(fub)-1)],'mmm-dd-yy') ] ') \n' ]]);
+
+NI=sum(IncC(:,2)+IncW(:,2)+IncH(:,2)+IncO(:,2));
+Temp2=sum(UMLExTNS,2);
+fprintf('Percentage of all infections travel over infectious period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTNS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
+Temp2=sum(UMLExNS,2);
+fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExNS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
+Temp2=sum(UMLExTS,2);
+fprintf('Percentage of all infections travel over incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
+Temp2=sum(UMLExS,2);
+fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
+
+EndDateofSim = datenum('1-31-2020');
+TB = datenum('01-23-2020');% Start date
+NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
+T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);
+UT=cumsum(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
+UNT=cumsum(UMLExNS(:,end-(EndDateofSim-TB):end),2);
+MM=zeros(1000,1);
+LL=zeros(1000,1);
+fNT=find(NT>50,1);
+fT=find(T>50,1);
+for ii=1:1000
+MM(ii)=find(UNT(ii,:)>50,1);
+LL(ii)=find(UT(ii,:)>50,1);
+end
+BD=prctile(LL,[2.5 97.5]);
+fprintf(['Date exceed 50 cases Travel ban:' datestr([TB+(fT-1)],'mmm-dd-yy') '(95%% CI: ' datestr([TB+(BD(1)-1)],'mmm-dd-yy') ' - ' datestr([TB+(BD(2)-1)],'mmm-dd-yy') '\n']);
+BD=prctile(MM,[2.5 97.5]);
+fprintf(['Date exceed 50 cases No travel ban:' datestr([TB+(fNT-1)],'mmm-dd-yy') '(95%% CI: ' datestr([TB+(BD(1)-1)],'mmm-dd-yy') ' - ' datestr([TB+(BD(2)-1)],'mmm-dd-yy') '\n']);
+
+NT=mean(MLExNS(end-(EndDateofSim-TB):end),2);
+T=mean(MLExTNS(end-(EndDateofSim-TB):end),2);
+
+UT=mean(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
+UNT=mean(UMLExNS(:,end-(EndDateofSim-TB):end),2);
+fprintf(['Cases per day Travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[T prctile(UT,[2.5 97.5])]);
+fprintf(['Cases per day No travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[NT prctile(UNT,[2.5 97.5])]);
+
+clear;

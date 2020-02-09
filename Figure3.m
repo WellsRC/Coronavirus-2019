@@ -44,13 +44,13 @@ load('Weight_Flights');
 Cor=zeros(9,2);
 for ii=1:length(FC)
     tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
-    scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,15,'k','filled'); hold on;
+    scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
 %      if((ii==20))
 %          text((FC{ii,2}-1)-0.2,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11,'HorizontalAlignment','right');
 % %     elseif(ii==9)        
 % %         text((FC{ii,2}-1)+0.015,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11);
 %      else
-        text((FC{ii,2}-1)+0.015,(FlightAll{tf,2}*ptravel)+0.00000075,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
+        text((FC{ii,2}-1)+0.06,(FlightAll{tf,2}*ptravel)+0.0000045,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
 %      end
     Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
 end
