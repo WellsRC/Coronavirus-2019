@@ -98,15 +98,15 @@ for mm=1:length(pmb)
     D=(TT-E);
     D(D<0)=0;
 
-    PItemp=wtc.*(1-(1-ptravel).^D);
+    PItemp=wtc.*(1-(1-ptravel).^D); % Travel before symptoms appear
     
     TempT=[T TW TF];
     for ii=1:maxE
        f=find(TempT==ii);
        if(~isempty(f))
-            UxT(:,ii)=sum(PItemp(:,f),2);
+            UxT(:,ii)=sum(PItemp(:,f),2); % time of sympaots based on travel over incubation period
        end
-       for zz=1:NS2
+       for zz=1:NS2 % travel during symptoms
           f=find(TBNS(zz,:)>ii);
           g=find(TempT(f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-TempT(f(g)));
@@ -119,7 +119,7 @@ startDateofSim = datenum('12-06-2019');% Start date
 XTL=datestr([startDateofSim+[0:4:(maxE-1)]],'mm-dd-yy');
 
 figure('units','normalized','outerposition',[0 0 1 1]);
-
+% Plot the patches
 for ii=1:maxE
    patch(ii+[-0.35 0.35 0.35 -0.35], [F(2,ii) F(2,ii) F(3,ii) F(3,ii)],'k','LineStyle','none','Facealpha',0.3);hold on
    plot(ii+linspace(-0.35,0.35,2),F(1,ii).*ones(1,2),'k','LineWidth',2);    
@@ -132,6 +132,6 @@ xlim([1 maxE+0.5])
 ylim([0 30]);
 ylabel({'Incidence'},'Fontsize',18);
 xlabel({'Date'},'Fontsize',18);
-
+%Plot travel bans
 plot([INDX INDX],[0 30],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 30],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
