@@ -88,7 +88,7 @@ parfor ww=1:length(w)
           CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts; % put to cumualtive
        end
     end
-    % Calcualte the means
+    % Calcualte the me
     MLE(ww,:)=mean(CPxTNS,1);
     MLEP(ww,:)=mean(PxTNS,1); 
 end
