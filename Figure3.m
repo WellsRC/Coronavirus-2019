@@ -26,7 +26,7 @@ xlabel('Date','Fontsize',18);
 %title({'Probability of exportation since start of outbreak'},'Fontsize',18);%
 yhh=ylabel('Probability of travel per day','Fontsize',18);
 y=colorbar;
-yhC=ylabel(y,{'Likelihood of first importation event'});
+yhC=ylabel(y,{'Risk of initial importation event','(Probability)'});
 yhC.Rotation=270;
 yhC.Position=[4.452698026384615,mean([[-5 -1]]),0];
 y.Position=[0.913738733818127,0.133738601823708,0.011204481792717,0.79128672745694];
@@ -57,5 +57,5 @@ end
 plot([INDX INDX],[0 4.4*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 4.4*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 [r,p]=corr(Cor);
-text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);
+%text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);
 clear;

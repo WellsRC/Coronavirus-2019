@@ -2,7 +2,7 @@ clear;
 clc;
 CC=[hex2rgb('#2D4262');hex2rgb('#F5BE41');];
 
-CCT=[hex2rgb('#9BC01C')];
+CCT=[hex2rgb('#20948B')];
 
 
 INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
@@ -160,6 +160,6 @@ set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLab
 xtickangle(45);
 xlim([1 maxE])
 ylim([0 0.1]);
-title({'Risk of first exportation event'},'Fontsize',18);
+title({'Risk of initial exportation event'},'Fontsize',18);
 text(yhB.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
 clear;

@@ -128,6 +128,7 @@ UT=mean(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
 UNT=mean(UMLExNS(:,end-(EndDateofSim-TB):end),2);
 fprintf(['Cases per day Travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[T prctile(UT,[2.5 97.5])]);
 fprintf(['Cases per day No travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[NT prctile(UNT,[2.5 97.5])]);
+fprintf(['Cases per day No travel ban (Starting Jan 23): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n'],100.*[(NT-T)./NT prctile((UNT-UT)./UNT,[2.5 97.5])]);
 
 clear;
 
