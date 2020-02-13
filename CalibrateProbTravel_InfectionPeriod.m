@@ -1,9 +1,15 @@
 %% Used to calibrate the probability of travel for the simulation
 clear;
+
+pobj=parpool(20);
 % Determine the weight for flgihts outside of China
-load('Weight_Flights.mat','FlightAll')
+load('Weight_Flights.mat')
 tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+w1=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+
+tf=strcmp({'China'},{Flight_NW{:,1}});
+w2=1-[Flight_NW{tf,2}]; % the weight for flights outside of China
+
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
@@ -65,8 +71,8 @@ TT(:,(length(T)+length(TW)+1):end)=min(TT(:,(length(T)+length(TW)+1):end),INDX2)
 %Used for the tima after symptom onset
 TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
 TAOT=TAO; %Used in indexing the time of onset (could have just used TT to save memory...)
-TAO(TAOT>=INDXMV)=TT(TAOT>=INDXMV)+TimeMedJan1(length(TAOT(TAOT>=INDXMV)));  % for symptom onset on jan1 or past sample from that distribtuion (Note: here it is not an issue we truncated TT indexes before as we truncate this later as well)
-TAO(TAOT<INDXMV)=TT(TAOT<INDXMV)+TimeMedDec31(length(TAOT(TAOT<INDXMV))); % for symptom onset before jan1 or past sample from that distribtuion (Note: here it is not an issue we truncated TT indexes before as we truncate this later as well)
+TAO(TAOT>=INDXMV)=TT(TAOT>=INDXMV)+TimeMedJan1(length(TAOT(TAOT>=INDXMV)));  % for symptom onset on jan1 or past sample from that distribtuion (Note: here it is not an issue we truncated TT indexes before as we truncate this later as well and we are adding on to of the time of the travle ban)
+TAO(TAOT<INDXMV)=TT(TAOT<INDXMV)+TimeMedDec31(length(TAOT(TAOT<INDXMV))); % for symptom onset before jan1 or past sample from that distribtuion (Note: here it is not an issue we truncated TT indexes before as we truncate this later as well and we are adding on to of the time of the travle ban)
 TBNS=TAO; % variable for integrating time ban 
 TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX); % Restrict time based on the min of time of first medical and travel ban in wuhan
 TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2); % Restrict time based on the min of time of first medical and travel ban in Hubei
@@ -77,14 +83,29 @@ parfor mm=1:length(pc)
     ptravel=pc(mm); % set the travel probability
     UxT=zeros(NS1*NS2,maxE);
 
-    D=(TT-E); % Calcualte the duration of the incubation period (Note: Recall TT was truncated for the travel ban)
-    D(D<0)=0; % This ensures exposed people cannot leave during travel ban
-
-    PItemp=wtc.*(1-(1-ptravel).^D); % probability of traveling outside of China
+    PItemp=zeros(size(E)); % probability of traveling outside of China
+    for ii=minE:maxE
+       if(ii>=INDX)
+          wtc=w2; 
+       else          
+          wtc=w1; 
+       end
+       for jj=1:NS2
+           f=find(TT(jj,:)>ii); % find those liekly in infected period (THIS TAKES CARE OF TRAVEL BAN)
+          g=find(E(jj,f)<=ii); % find thos that are in infected period (WONT TAKE PEOPLE IN TRAVEL BAN e.g. if travel ban is ii the ywill not be selected in line above)
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(jj,f(g))); % probability
+          PItemp(jj,f(g))=PItemp(jj,f(g))+dt;
+       end
+    end
     
     TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction a exposed people can travel before the travel ban and then show symptoms
     for ii=1:maxE
-       f=find(TempT==ii);
+       if(ii>=INDX)
+          wtc=w2; 
+       else          
+          wtc=w1; 
+       end
+       f=find(TempT==ii); % Find the times of symptom onset
        if(~isempty(f))
             UxT(:,ii)=sum(PItemp(:,f),2); % sum those who have traveled and are now symtpmatic
        end

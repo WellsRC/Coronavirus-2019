@@ -1,11 +1,13 @@
 % Runs analysis for Figure 1
 clear;
 
-pobj=parpool(20);
+%pobj=parpool(20);
 % Determine the weight for flgihts outside of China
-load('Weight_Flights.mat','FlightAll')
+load('Weight_Flights.mat','FlightAll','Flight_NW')
 tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+wtc1=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+tf=strcmp({'China'},{Flight_NW{:,1}});
+wtc2=1-[Flight_NW{tf,2}]; % the weight for flights outside of China
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
@@ -67,7 +69,6 @@ UxT=zeros(NS2,length([minE:maxE]));
 UxS=zeros(NS2,length([minE:maxE]));
 UxNS=zeros(NS2,length([minE:maxE]));
 UxTNS=zeros(NS2,length([minE:maxE]));
-IP=zeros(NS2,length(T)+length(TW)+length(TF));
 
 PxT=ones(NS2,length([minE:maxE]));
 PxS=ones(NS2,length([minE:maxE]));
@@ -94,40 +95,45 @@ TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeMedDec31(length(TAOT(TAOT<INDXMV)));
 TBNS=TAO;
 TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
 TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
+TempZ=zeros(size(E));
+TempZ2=zeros(size(E));
 for ii=minE:maxE
+    if(ii>=INDX)
+      wtc=wtc2; 
+    else          
+      wtc=wtc1; 
+    end
    for mm=1:NS2
       f=find(TT(mm,:)>ii);
       g=find(E(mm,f)<=ii);
       dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-      UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
-      PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
-      gg=find(E(mm,:)<=ii);
-      temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0);
-      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
-      CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
+      UxT(mm,ii-(minE)+1)=sum(dt);
+      PxT(mm,ii-(minE)+1)=(1-prod(1-dt));
+      TempZ(mm,f(g))=TempZ(mm,f(g))+dt;
+      dts=(1-prod(1-TempZ(mm,:))); % calcualte probability for eahc
+      CPxTS(mm,ii-(minE)+1)=dts;
       
       
       f=find(TNR(mm,:)>ii);
       g=find(E(mm,f)<=ii);
       dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-      UxS(mm,ii-(minE)+1)=UxS(mm,ii-(minE)+1)+sum(dt);
-      PxS(mm,ii-(minE)+1)=PxS(mm,ii-(minE)+1).*(1-prod(1-dt));
+      UxS(mm,ii-(minE)+1)=sum(dt);
+      PxS(mm,ii-(minE)+1)=(1-prod(1-dt));
       
       f=find(TAO(mm,:)>ii);
       g=find(E(mm,f)<=ii);
       dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-      UxNS(mm,ii-(minE)+1)=UxNS(mm,ii-(minE)+1)+sum(dt);
-      PxNS(mm,ii-(minE)+1)=PxNS(mm,ii-(minE)+1).*(1-prod(1-dt));
+      UxNS(mm,ii-(minE)+1)=sum(dt);
+      PxNS(mm,ii-(minE)+1)=(1-prod(1-dt));
       
       f=find(TBNS(mm,:)>ii);
       g=find(E(mm,f)<=ii);
       dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-      UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
-      PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
-      gg=find(E(mm,:)<=ii);
-      temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0);
-      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
-      CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
+      UxTNS(mm,ii-(minE)+1)=sum(dt);
+      PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt));
+      TempZ2(mm,f(g))=TempZ2(mm,f(g))+dt;
+      dts=(1-prod(1-TempZ2(mm,:))); % calcualte probability for eahc
+      CPxTNS(mm,ii-(minE)+1)=dts;
    end
 end    
 
@@ -190,51 +196,56 @@ parfor ss=1:NS1
 
     % Travel Ban and screening
     E=repmat([T TW TF],NS2,1)-IP; 
-    TT=[repmat([T],NS2,1) min(repmat([TW],NS2,1),INDX) min(repmat([TF],NS2,1),INDX2)]; % Not subtracting one as when calcuating below we look at days exclusive before and do not include this day
-    TNR=repmat([T TW TF],NS2,1);
-    TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
-    TAOT=TAO;
-    TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeMedJan1(length(TAOT(TAOT>=INDXMV))); 
-    TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeMedDec31(length(TAOT(TAOT<INDXMV))); 
-    TBNS=TAO;
-    TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
-    TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
+   TT=[repmat([T],NS2,1) min(repmat([TW],NS2,1),INDX) min(repmat([TF],NS2,1),INDX2)]; % Not subtracting one as when calcuating below we look at days exclusive before and do not include this day
+TNR=repmat([T TW TF],NS2,1);
+TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
+TAOT=TAO;
+TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeMedJan1(length(TAOT(TAOT>=INDXMV))); 
+TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeMedDec31(length(TAOT(TAOT<INDXMV))); 
+TBNS=TAO;
+TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
+TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
+TempZ=zeros(size(E));
+TempZ2=zeros(size(E));
     for ii=minE:maxE
-       for mm=1:NS2          
+        if(ii>=INDX)
+          wtc=wtc2; 
+        else          
+          wtc=wtc1; 
+        end
+       for mm=1:NS2
           f=find(TT(mm,:)>ii);
           g=find(E(mm,f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-          UxT(mm,ii-(minE)+1)=UxT(mm,ii-(minE)+1)+sum(dt);
-          PxT(mm,ii-(minE)+1)=PxT(mm,ii-(minE)+1).*(1-prod(1-dt));
-          gg=find(E(mm,:)<=ii);
-          temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0);
-          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
-          CPxTS(mm,ii-(minE)+1)=CPxTS(mm,ii-(minE)+1).*dts;
+          UxT(mm,ii-(minE)+1)=sum(dt);
+          PxT(mm,ii-(minE)+1)=(1-prod(1-dt));
+          TempZ(mm,f(g))=TempZ(mm,f(g))+dt;
+          dts=(1-prod(1-TempZ(mm,:))); % calcualte probability for eahc
+          CPxTS(mm,ii-(minE)+1)=dts;
 
 
           f=find(TNR(mm,:)>ii);
           g=find(E(mm,f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-          UxS(mm,ii-(minE)+1)=UxS(mm,ii-(minE)+1)+sum(dt);
-          PxS(mm,ii-(minE)+1)=PxS(mm,ii-(minE)+1).*(1-prod(1-dt));
+          UxS(mm,ii-(minE)+1)=sum(dt);
+          PxS(mm,ii-(minE)+1)=(1-prod(1-dt));
 
           f=find(TAO(mm,:)>ii);
           g=find(E(mm,f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-          UxNS(mm,ii-(minE)+1)=UxNS(mm,ii-(minE)+1)+sum(dt);
-          PxNS(mm,ii-(minE)+1)=PxNS(mm,ii-(minE)+1).*(1-prod(1-dt));
+          UxNS(mm,ii-(minE)+1)=sum(dt);
+          PxNS(mm,ii-(minE)+1)=(1-prod(1-dt));
 
           f=find(TBNS(mm,:)>ii);
           g=find(E(mm,f)<=ii);
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
-          UxTNS(mm,ii-(minE)+1)=UxTNS(mm,ii-(minE)+1)+sum(dt);
-          PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt));
-          gg=find(E(mm,:)<=ii);
-          temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0);
-          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps)));
-          CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts;
+          UxTNS(mm,ii-(minE)+1)=sum(dt);
+          PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt));
+          TempZ2(mm,f(g))=TempZ2(mm,f(g))+dt;
+          dts=(1-prod(1-TempZ2(mm,:))); % calcualte probability for eahc
+          CPxTNS(mm,ii-(minE)+1)=dts;
        end
-    end 
+    end  
 
     UMLExTS(ss,:)=mean(UxT,1);
     UMLExS(ss,:)=mean(UxS,1);

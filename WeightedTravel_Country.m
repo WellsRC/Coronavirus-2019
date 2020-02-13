@@ -1,9 +1,8 @@
 %% Calcualtes the Probabilities for the specific countries
 clear;
 % Determine the weight for flgihts outside of China
-load('Weight_Flights.mat','FlightAll')
-tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+
+
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
@@ -76,28 +75,37 @@ for ii=1:length(w)
     tf = strcmp({FC{ii,1}},{FlightAll{:,1}}); % find country specific name
     w(ii)=FlightAll{tf,2}; % define the wieght
 end
-w=unique(w); % only need the unqiue weights
+w2=zeros(length([FC{:,2}]),1);
+for ii=1:length(w2)    
+    tf = strcmp({FC{ii,1}},{Flight_NW{:,1}}); % find country specific name
+    w2(ii)=Flight_NW{tf,2}; % define the wieght
+end
 
 MLE=zeros(length(w),length([minE:maxE])); % Daily probability 
 MLEP=zeros(length(w),length([minE:maxE])); % Cumualtive probability
-parfor ww=1:length(w)
-    wtc=w(ww); % set the country weigth
+parfor ww=1:length([FC{:,2}])
+    
+    TTT=zeros(NS2,length([T TW TF]));
     CPxTNS=ones(NS2,length([minE:maxE])); % initialize cumulative prob.
     PxTNS=ones(NS2,length([minE:maxE])); % initialize daily prob.
     for ii=minE:maxE
+       if(ii>=INDX)
+          wtc=w2(ww); 
+       else          
+          wtc=w(ww); 
+       end
        for mm=1:NS2
            f=find(TBNS(mm,:)>ii); % find those liekly in infected period (THIS TAKES CARE OF TRAVEL BAN)
           g=find(E(mm,f)<=ii); % find thos that are in infected period (WONT TAKE PEOPLE IN TRAVEL BAN e.g. if travel ban is ii the ywill not be selected in line above)
           dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte the probability of each case
-          PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt)); % calaculte total probabaility 
-          gg=find(E(mm,:)<=ii); %find those that are or have been in incubatin period
-          temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0); % determine how long the have been
-          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps))); % calcualte probability for eahc
-          CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts; % put to cumualtive
+          TTT(mm,f(g))=TTT(mm,f(g))+dt;
+          PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calaculte total probabaility 
+          dts=(1-prod(1-TTT(mm,:))); % calcualte probability for eahc
+          CPxTNS(mm,ii-(minE)+1)=dts; % put to cumualtive
        end
     end
     MLE(ww,:)=mean(CPxTNS,1);
     MLEP(ww,:)=mean(PxTNS,1);
 end
 
-    save(['Weighted_Travel_Infectious_Country.mat'],'MLE','w','MLEP');
+    save(['Weighted_Travel_Infectious_Country.mat'],'MLE','w','w2','MLEP');

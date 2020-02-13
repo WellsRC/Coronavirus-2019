@@ -23,16 +23,16 @@ load('TravelDuringInfection.mat')
 
 
 subplot('Position',[0.367+0.01,0.21,2.*0.283865546218487,0.3]); 
-plot([0:14],MLECT,'color',CIP(1,:),'LineWidth',2); hold on;
+plot([0:14],(MLE-MLECT)./MLE,'color',CIP(1,:),'LineWidth',2); hold on;
 
-LB=prctile(LCT,2.5);
-UB=flip(prctile(LCT,97.5));
+LB=prctile((L-LCT)./L,2.5);
+UB=flip(prctile((L-LCT)./L,97.5));
 patch([[0:14] flip([0:14])],[LB UB],CIP,'LineStyle','none','Facealpha',0.35);
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[0:14],'Xminortick','on','Yminortick','on');
 box off
 xlim([0 14])
-ylim([0 0.02]);
-yh=ylabel({'Probability of travel','during incubation period'},'Fontsize',18);
+ylim([0 1]);
+yh=ylabel({'Reduction in the probability of',' travel during incubation period'},'Fontsize',18);
 xlabel('Days from infection to quarantine','Fontsize',18);
 
 text(yh.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');

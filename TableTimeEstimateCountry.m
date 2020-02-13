@@ -1,15 +1,13 @@
-clc;
+% clc;
 
-minE=-22;
-maxE=57;
 EsT=zeros(10,5);
     load(['Weighted_Travel_Infectious_Country.mat']);
     load('Weight_Flights');
+
+minE=-22;
+maxE=68;
     for ii=1:length(FC)
-        tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
-        wt=FlightAll{tf,2};
-        f=find(w==wt);
-        PP=MLE(f,:)';
+        PP=MLE(ii,:)';
         PP=PP(2:end)-PP(1:(end-1));
         PP=PP./sum(PP);
         tt=([(minE+1):maxE]);

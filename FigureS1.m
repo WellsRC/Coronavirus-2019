@@ -1,9 +1,14 @@
 %% Geenrates Figure S1
 clear;
 % Determine the weight for flgihts outside of China
-load('Weight_Flights.mat','FlightAll')
+% Determine the weight for flgihts outside of China
+load('Weight_Flights.mat')
 tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+w1=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+
+tf=strcmp({'China'},{Flight_NW{:,1}});
+w2=1-[Flight_NW{tf,2}]; % the weight for flights outside of China
+
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
@@ -91,28 +96,43 @@ pmb(3)=prctile(spc,97.5);
 
 
 F=zeros(3,length([1:maxE])); % only need to go from one to maxE as no infectious case is past one and we are looking at the symptomatic cases only
-for mm=1:length(pmb)
+parfor mm=1:length(pmb)
     ptravel=pmb(mm);
     UxT=zeros(NS1*NS2,maxE);
 
-    D=(TT-E);
-    D(D<0)=0;
-
-    PItemp=wtc.*(1-(1-ptravel).^D); % Travel before symptoms appear
+    PItemp=zeros(size(E)); % probability of traveling outside of China
+    for ii=minE:maxE
+       if(ii>=INDX)
+          wtc=w2; 
+       else          
+          wtc=w1; 
+       end
+       for jj=1:NS2
+           f=find(TT(jj,:)>ii); % find those liekly in infected period (THIS TAKES CARE OF TRAVEL BAN)
+          g=find(E(jj,f)<=ii); % find thos that are in infected period (WONT TAKE PEOPLE IN TRAVEL BAN e.g. if travel ban is ii the ywill not be selected in line above)
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(jj,f(g))); % probability
+          PItemp(jj,f(g))=PItemp(jj,f(g))+dt;
+       end
+    end
     
-    TempT=[T TW TF];
+    TempT=[T TW TF]; % Do not need to truncate here as we need this for the time of symptom onset the probabailty takes care of the travel restriction a exposed people can travel before the travel ban and then show symptoms
     for ii=1:maxE
-       f=find(TempT==ii);
+        if(ii>=INDX)
+          wtc=w2; 
+       else          
+          wtc=w1; 
+       end
+       f=find(TempT==ii); % Find the times of symptom onset
        if(~isempty(f))
-            UxT(:,ii)=sum(PItemp(:,f),2); % time of sympaots based on travel over incubation period
+            UxT(:,ii)=sum(PItemp(:,f),2); % sum those who have traveled and are now symtpmatic
        end
-       for zz=1:NS2 % travel during symptoms
-          f=find(TBNS(zz,:)>ii);
-          g=find(TempT(f)<=ii);
-          dt=wtc.*ptravel*(1-ptravel).^(ii-TempT(f(g)));
-          UxT(zz,ii)=UxT(zz,ii)+sum(dt);
+       for zz=1:NS2
+          f=find(TBNS(zz,:)>ii); % find those who are symptomatic
+          g=find(TempT(f)<=ii); % of those who still are are they in their symptomatic period
+          dt=wtc.*ptravel*(1-ptravel).^(ii-TempT(f(g))); % probability
+          UxT(zz,ii)=UxT(zz,ii)+sum(dt); % expected value
        end
-    end    
+    end        
     F(mm,:)=mean(UxT,1);
 end
 startDateofSim = datenum('12-06-2019');% Start date

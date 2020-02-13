@@ -1,10 +1,13 @@
 % Runs analysis for Figure 1
 clear;
-pobj=parpool(20);
+
+% pobj=parpool(20);
 % Determine the weight for flgihts outside of China
-load('Weight_Flights.mat','FlightAll')
+load('Weight_Flights.mat','FlightAll','Flight_NW')
 tf=strcmp({'China'},{FlightAll{:,1}});
-wtc=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+wtc1=1-[FlightAll{tf,2}]; % the weight for flights outside of China
+tf=strcmp({'China'},{Flight_NW{:,1}});
+wtc2=1-[Flight_NW{tf,2}]; % the weight for flights outside of China
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
@@ -67,12 +70,12 @@ UxS=zeros(NS2,length([minE:maxE]));
 UxNS=zeros(NS2,length([minE:maxE]));
 UxTNS=zeros(NS2,length([minE:maxE]));
 
-PxT=zeros(NS2,length([minE:maxE]));
-PxS=zeros(NS2,length([minE:maxE]));
-CPxTS=zeros(NS2,length([minE:maxE]));
-CPxTNS=zeros(NS2,length([minE:maxE]));
-PxNS=zeros(NS2,length([minE:maxE]));
-PxTNS=zeros(NS2,length([minE:maxE]));
+PxT=ones(NS2,length([minE:maxE]));
+PxS=ones(NS2,length([minE:maxE]));
+CPxTS=ones(NS2,length([minE:maxE]));
+CPxTNS=ones(NS2,length([minE:maxE]));
+PxNS=ones(NS2,length([minE:maxE]));
+PxTNS=ones(NS2,length([minE:maxE]));
 
 % Sample duration of the incubation period
 IP=zeros(NS2,length(T)+length(TW)+length(TF));
@@ -84,53 +87,56 @@ end
 % Travel Ban and screening
 E=repmat([T TW TF],NS2,1)-IP; 
 TT=[repmat([T],NS2,1) min(repmat([TW],NS2,1),INDX) min(repmat([TF],NS2,1),INDX2)]; % Not subtracting one as when calcuating below we look at days exclusive before and do not include this day
-TNR=repmat([T TW TF],NS2,1); % Used in the no travel restriction
-TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)]; % Time of symtpm onset
-TAOT=TAO; % temp variable
-TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeHospitalJan1(length(TAOT(TAOT>=INDXMV))); % sample from appropriate distribtuon given jan 1 or later
-TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeHospitalDec31(length(TAOT(TAOT<INDXMV))); % sample from appropriate distribtuon given before Jan1
-TBNS=TAO; % Used in travel ban
-TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX); % truncae for wuhan
-TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2); % truncae for hubie
+TNR=repmat([T TW TF],NS2,1);
+TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
+TAOT=TAO;
+TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeHospitalJan1(length(TAOT(TAOT>=INDXMV))); 
+TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeHospitalDec31(length(TAOT(TAOT<INDXMV))); 
+TBNS=TAO;
+TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
+TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
+TempZ=zeros(size(E));
+TempZ2=zeros(size(E));
 for ii=minE:maxE
+    if(ii>=INDX)
+      wtc=wtc2; 
+    else          
+      wtc=wtc1; 
+    end
    for mm=1:NS2
-       % Trave ban non-symptoamtic
-      f=find(TT(mm,:)>ii); % find cases not yet recovered
-      g=find(E(mm,f)<=ii); % find cases that are infected
-      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
-      UxT(mm,ii-(minE)+1)=sum(dt); % get expected value by summing
-      PxT(mm,ii-(minE)+1)=(1-prod(1-dt)); % prob at least one travels
-      gg=find(E(mm,:)<=ii); % find people infected
-      temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0); % how long infected for
-      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps))); % cumulative prob
-      CPxTS(mm,ii-(minE)+1)=dts;  
+      f=find(TT(mm,:)>ii);
+      g=find(E(mm,f)<=ii);
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+      UxT(mm,ii-(minE)+1)=sum(dt);
+      PxT(mm,ii-(minE)+1)=(1-prod(1-dt));
+      TempZ(mm,f(g))=TempZ(mm,f(g))+dt;
+      dts=(1-prod(1-TempZ(mm,:))); % calcualte probability for eahc
+      CPxTS(mm,ii-(minE)+1)=dts;
       
       
-      f=find(TNR(mm,:)>ii);% find cases not yet recovered
-      g=find(E(mm,f)<=ii);% find cases that are infected
-      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));% calcualte prob
+      f=find(TNR(mm,:)>ii);
+      g=find(E(mm,f)<=ii);
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxS(mm,ii-(minE)+1)=sum(dt);
-      PxS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
+      PxS(mm,ii-(minE)+1)=(1-prod(1-dt));
       
-      f=find(TAO(mm,:)>ii);% find cases not yet recovered
-      g=find(E(mm,f)<=ii);% find cases that are infected
-      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
+      f=find(TAO(mm,:)>ii);
+      g=find(E(mm,f)<=ii);
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxNS(mm,ii-(minE)+1)=sum(dt);
-      PxNS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
+      PxNS(mm,ii-(minE)+1)=(1-prod(1-dt));
       
-      f=find(TBNS(mm,:)>ii);% find cases not yet recovered
-      g=find(E(mm,f)<=ii);% find cases that are infected
-      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
+      f=find(TBNS(mm,:)>ii);
+      g=find(E(mm,f)<=ii);
+      dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
       UxTNS(mm,ii-(minE)+1)=sum(dt);
-      PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
-      gg=find(E(mm,:)<=ii);% find cases that are infected
-      temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0); % how long infected for
-      dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps))); % calcualte cumulative prob
+      PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt));
+      TempZ2(mm,f(g))=TempZ2(mm,f(g))+dt;
+      dts=(1-prod(1-TempZ2(mm,:))); % calcualte probability for eahc
       CPxTNS(mm,ii-(minE)+1)=dts;
    end
 end    
 
-% Calcualte average of NS2
 MLExTS=mean(UxT,1);
 MLExS=mean(UxS,1);
 MLExNS=mean(UxNS,1);
@@ -143,7 +149,7 @@ MPTNS=mean(PxTNS,1);
 
 MCPTS=mean(CPxTS,1);
 MCPTNS=mean(CPxTNS,1);
-save('Daily_Prob_Expect_Hospt.mat');
+save('Daily_Prob_Expect_Hospital.mat');
 %% Uncertainty Estimates
 
 UMLExTS=zeros(NS1,length(MLExTS));
@@ -169,76 +175,78 @@ for ii=1:NS1
 end
 
 parfor ss=1:NS1
-    %Initialize
-    ptravel=spc(ss); % set the travel probability
+    ptravel=spc(ss);
     UxT=zeros(NS2,length([minE:maxE]));
     UxS=zeros(NS2,length([minE:maxE]));
     UxNS=zeros(NS2,length([minE:maxE]));
     UxTNS=zeros(NS2,length([minE:maxE]));
-
-    PxT=zeros(NS2,length([minE:maxE]));
-    PxS=zeros(NS2,length([minE:maxE]));
-    CPxTS=zeros(NS2,length([minE:maxE]));
-    CPxTNS=zeros(NS2,length([minE:maxE]));
-    PxNS=zeros(NS2,length([minE:maxE]));
-    PxTNS=zeros(NS2,length([minE:maxE]));
-
-    % Sample duration of the incubation period
     IP=zeros(NS2,length(T)+length(TW)+length(TF));
-    for ii=1:NS2        
-        [IP(ii,:),~] = IncubationDist(mun(ss),length(T)+length(TW)+length(TF)); % sample with mean mun(ss)
-    end
 
+    PxT=ones(NS2,length([minE:maxE]));
+    PxS=ones(NS2,length([minE:maxE]));
+    CPxTS=ones(NS2,length([minE:maxE]));
+    CPxTNS=ones(NS2,length([minE:maxE]));
+    PxNS=ones(NS2,length([minE:maxE]));
+    PxTNS=ones(NS2,length([minE:maxE]));
+
+    % Sample incubation period
+    for ii=1:NS2
+        [IP(ii,:),~] = IncubationDist(mun(ss),length(T)+length(TW)+length(TF));
+    end
 
     % Travel Ban and screening
     E=repmat([T TW TF],NS2,1)-IP; 
-    TT=[repmat([T],NS2,1) min(repmat([TW],NS2,1),INDX) min(repmat([TF],NS2,1),INDX2)]; % Not subtracting one as when calcuating below we look at days exclusive before and do not include this day
-    TNR=repmat([T TW TF],NS2,1); % Used in the no travel restriction
-    TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)]; % Time of symtpm onset
-    TAOT=TAO; % temp variable
-    TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeHospitalJan1(length(TAOT(TAOT>=INDXMV))); % sample from appropriate distribtuon given jan 1 or later
-    TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeHospitalDec31(length(TAOT(TAOT<INDXMV))); % sample from appropriate distribtuon given before Jan1
-    TBNS=TAO; % Used in travel ban
-    TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX); % truncae for wuhan
-    TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2); % truncae for hubie
+   TT=[repmat([T],NS2,1) min(repmat([TW],NS2,1),INDX) min(repmat([TF],NS2,1),INDX2)]; % Not subtracting one as when calcuating below we look at days exclusive before and do not include this day
+TNR=repmat([T TW TF],NS2,1);
+TAO=[repmat([T],NS2,1) repmat([TW],NS2,1) repmat([TF],NS2,1)];
+TAOT=TAO;
+TAO(TAOT>=INDXMV)=TNR(TAOT>=INDXMV)+TimeHospitalJan1(length(TAOT(TAOT>=INDXMV))); 
+TAO(TAOT<INDXMV)=TNR(TAOT<INDXMV)+TimeHospitalDec31(length(TAOT(TAOT<INDXMV))); 
+TBNS=TAO;
+TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)+length(TW))),INDX);
+TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2);
+TempZ=zeros(size(E));
+TempZ2=zeros(size(E));
     for ii=minE:maxE
+        if(ii>=INDX)
+          wtc=wtc2; 
+        else          
+          wtc=wtc1; 
+        end
        for mm=1:NS2
-           % Trave ban non-symptoamtic
-          f=find(TT(mm,:)>ii); % find cases not yet recovered
-          g=find(E(mm,f)<=ii); % find cases that are infected
-          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
-          UxT(mm,ii-(minE)+1)=sum(dt); % get expected value by summing
-          PxT(mm,ii-(minE)+1)=(1-prod(1-dt)); % prob at least one travels
-          gg=find(E(mm,:)<=ii); % find people infected
-          temps=max(min(TT(mm,gg),ii+1)-E(mm,gg),0); % how long infected for
-          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps))); % cumulative prob
-          CPxTS(mm,ii-(minE)+1)=dts;  
+          f=find(TT(mm,:)>ii);
+          g=find(E(mm,f)<=ii);
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          UxT(mm,ii-(minE)+1)=sum(dt);
+          PxT(mm,ii-(minE)+1)=(1-prod(1-dt));
+          TempZ(mm,f(g))=TempZ(mm,f(g))+dt;
+          dts=(1-prod(1-TempZ(mm,:))); % calcualte probability for eahc
+          CPxTS(mm,ii-(minE)+1)=dts;
 
 
-          f=find(TNR(mm,:)>ii);% find cases not yet recovered
-          g=find(E(mm,f)<=ii);% find cases that are infected
-          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));% calcualte prob
+          f=find(TNR(mm,:)>ii);
+          g=find(E(mm,f)<=ii);
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxS(mm,ii-(minE)+1)=sum(dt);
-          PxS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
+          PxS(mm,ii-(minE)+1)=(1-prod(1-dt));
 
-          f=find(TAO(mm,:)>ii);% find cases not yet recovered
-          g=find(E(mm,f)<=ii);% find cases that are infected
-          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
+          f=find(TAO(mm,:)>ii);
+          g=find(E(mm,f)<=ii);
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxNS(mm,ii-(minE)+1)=sum(dt);
-          PxNS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
+          PxNS(mm,ii-(minE)+1)=(1-prod(1-dt));
 
-          f=find(TBNS(mm,:)>ii);% find cases not yet recovered
-          g=find(E(mm,f)<=ii);% find cases that are infected
-          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte prob
+          f=find(TBNS(mm,:)>ii);
+          g=find(E(mm,f)<=ii);
+          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
           UxTNS(mm,ii-(minE)+1)=sum(dt);
-          PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt)); % calcualte daily prob
-          gg=find(E(mm,:)<=ii);% find cases that are infected
-          temps=max(min(TBNS(mm,gg),ii+1)-E(mm,gg),0); % how long infected for
-          dts=(1-prod(1-wtc.*(1-(1-ptravel).^temps))); % calcualte cumulative prob
+          PxTNS(mm,ii-(minE)+1)=(1-prod(1-dt));
+          TempZ2(mm,f(g))=TempZ2(mm,f(g))+dt;
+          dts=(1-prod(1-TempZ2(mm,:))); % calcualte probability for eahc
           CPxTNS(mm,ii-(minE)+1)=dts;
        end
-    end    
-    % Average across N2 smaple
+    end  
+
     UMLExTS(ss,:)=mean(UxT,1);
     UMLExS(ss,:)=mean(UxS,1);
     UMLExNS(ss,:)=mean(UxNS,1);
@@ -250,5 +258,5 @@ parfor ss=1:NS1
     UMCPTS(ss,:)=mean(CPxTS,1);
     UMCPTNS(ss,:)=mean(CPxTNS,1);
 end
-save('Daily_Prob_Expect_Hospt.mat');
+save('Daily_Prob_Expect_Hospital.mat');
 clear;

@@ -33,50 +33,45 @@ HPA=D(:,2)./sum(D(:,2));
 
 % Initialize 
 DI=21; % suratino of incubation period max evalaution
-L=zeros(NS,1);
-LNS=zeros(NS,1);
-LNSA=zeros(NS,1);
-LNSH=zeros(NS,1);
-LNSHA=zeros(NS,1);
+ L=zeros(NS,1);
 LCT=zeros(NS,15);
-LCTIP=zeros(NS,15);
-tempL=zeros(DI+1,1);
-tempNS=zeros(DI+1,DI+1);
-tempNSA=zeros(DI+1,DI+1);
-tempNSH=zeros(DI+1,DI+1);
-tempNSHA=zeros(DI+1,DI+1);
+ tempL=zeros(DI+1,1);
+% tempNS=zeros(DI+1,DI+1);
+% tempNSA=zeros(DI+1,DI+1);
+% tempNSH=zeros(DI+1,DI+1);
+% tempNSHA=zeros(DI+1,DI+1);
 MLECT=zeros(1,15);
-MLECTIP=zeros(1,15);
+% MLECTIP=zeros(1,15);
 
 % Calculate averages for mle
 for s=0:DI    
-   pt=ptravel.*ones(s,1);
-   tempL(s+1)=Ipdf(s+1).*wtc.*LikelihoodMissed(pt);
-   for ti=0:(length(MP)-1)
-        pt=ptravel.*ones(s+ti,1);
-        tempNS(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
-        tempNSA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
-   end
-   for ti=0:(length(HP)-1)
-        pt=ptravel.*ones(s+ti,1);
-        tempNSH(s+1,ti+1)=Ipdf(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
-        tempNSHA(s+1,ti+1)=Ipdf(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
-   end
+%    pt=ptravel.*ones(s,1);
+    tempL(s+1)=Ipdf(s+1).*wtc.*(1-(1-ptravel).^(s));%LikelihoodMissed(pt);
+%    for ti=0:(length(MP)-1)
+%         pt=ptravel.*ones(s+ti,1);
+%         tempNS(s+1,ti+1)=Ipdf(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
+%         tempNSA(s+1,ti+1)=Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%    end
+%    for ti=0:(length(HP)-1)
+%         pt=ptravel.*ones(s+ti,1);
+%         tempNSH(s+1,ti+1)=Ipdf(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
+%         tempNSHA(s+1,ti+1)=Ipdf(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%    end
    for cc=0:14
-       pt=ptravel.*ones(min([s cc]),1);       
-       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*wtc.*LikelihoodMissed(pt); 
-       for ti=0:(length(MPA)-1)
-            pt=ptravel.*ones(min([s+ti cc]),1);
-             MLECTIP(cc+1)=MLECTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
-       end
+%        pt=ptravel.*ones(min([s cc]),1);       
+       MLECT(cc+1)=MLECT(cc+1)+Ipdf(s+1).*wtc.*(1-(1-ptravel).^(min([s cc])));%LikelihoodMissed(pt); 
+%        for ti=0:(length(MPA)-1)
+%             pt=ptravel.*ones(min([s+ti cc]),1);
+%              MLECTIP(cc+1)=MLECTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%        end
    end
 end
 
-MLE=sum(tempL);
-MLENS=sum(tempNS(:));
-MLENSA=sum(tempNSA(:));
-MLENSH=sum(tempNSH(:));
-MLENSHA=sum(tempNSHA(:));
+ MLE=sum(tempL);
+% MLENS=sum(tempNS(:));
+% MLENSA=sum(tempNSA(:));
+% MLENSH=sum(tempNSH(:));
+% MLENSHA=sum(tempNSHA(:));
 
 % Sample travel probability
 r=rand(NS,1);
@@ -92,32 +87,32 @@ end
 for ii=1:NS
     IP=UIpdf(ii,:);
     for s=0:DI    
-       pt=spc(ii).*ones(s,1);
-       tempL(s+1)=IP(s+1).*wtc.*LikelihoodMissed(pt);       
-       for ti=0:(length(MP)-1)
-            pt=spc(ii).*ones(s+ti,1);
-            tempNS(s+1,ti+1)=IP(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
-            tempNSA(s+1,ti+1)=IP(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
-       end
-       for ti=0:(length(HP)-1)
-            pt=spc(ii).*ones(s+ti,1);
-            tempNSH(s+1,ti+1)=IP(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
-            tempNSHA(s+1,ti+1)=IP(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
-       end
+%        pt=spc(ii).*ones(s,1);
+        tempL(s+1)=IP(s+1).*wtc.*(1-(1-spc(ii)).^s);      
+%        for ti=0:(length(MP)-1)
+%             pt=spc(ii).*ones(s+ti,1);
+%             tempNS(s+1,ti+1)=IP(s+1).*MP(ti+1).*wtc.*LikelihoodMissed(pt);
+%             tempNSA(s+1,ti+1)=IP(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%        end
+%        for ti=0:(length(HP)-1)
+%             pt=spc(ii).*ones(s+ti,1);
+%             tempNSH(s+1,ti+1)=IP(s+1).*HP(ti+1).*wtc.*LikelihoodMissed(pt);
+%             tempNSHA(s+1,ti+1)=IP(s+1).*HPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%        end
         for cc=0:14
             pt=spc(ii).*ones(min([cc s]),1);
-            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*wtc.*LikelihoodMissed(pt);  
-               for ti=0:(length(MPA)-1)
-                    pt=ptravel.*ones(min([s+ti cc]),1);
-                     LCTIP(cc+1)=LCTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
-               end
+            LCT(ii,cc+1)=LCT(ii,cc+1)+IP(s+1).*wtc.*(1-(1-spc(ii)).^(min([s cc])));%LikelihoodMissed(pt);  
+%                for ti=0:(length(MPA)-1)
+%                     pt=ptravel.*ones(min([s+ti cc]),1);
+%                      LCTIP(cc+1)=LCTIP(cc+1)+Ipdf(s+1).*MPA(ti+1).*wtc.*LikelihoodMissed(pt);
+%                end
         end
     end
-    L(ii)=sum(tempL);
-    LNS(ii)=sum(tempNS(:));
-    LNSA(ii)=sum(tempNSA(:));
-    LNSH(ii)=sum(tempNSH(:));
-    LNSHA(ii)=sum(tempNSHA(:));
+     L(ii)=sum(tempL);
+%     LNS(ii)=sum(tempNS(:));
+%     LNSA(ii)=sum(tempNSA(:));
+%     LNSH(ii)=sum(tempNSH(:));
+%     LNSHA(ii)=sum(tempNSHA(:));
 end
-save('TravelDuringInfection.mat','L','LNS','LNSA','LNSH','LNSHA','LCT','MLE','MLENS','MLENSA','MLENSH','MLENSHA','MLECT','MLECTIP','LCTIP');
+save('TravelDuringInfection.mat','LCT','MLECT','L','MLE');%'L','LNS','LNSA','LNSH','LNSHA','LCT','MLE','MLENS','MLENSA','MLENSH','MLENSHA','MLECT','MLECTIP','LCTIP');
 
