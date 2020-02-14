@@ -1,6 +1,6 @@
 %% Calcualtes produces the contourmap for figure 2
 clear;
-%pobj=parpool(20);
+pobj=parpool(20);
 % Determine the weight for flgihts outside of China
 mincfw=1.0345; % mean increase in flight weight;
 % Load the incidence data
@@ -70,12 +70,12 @@ TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),IN
 
 w=[0:0.0001:0.03];
 MLE=zeros(length(w),length([minE:maxE])); % Daily probability 
-MLEP=zeros(length(w),length([minE:maxE])); % Cumualtive probability
+%MLEP=zeros(length(w),length([minE:maxE])); % Cumualtive probability
 parfor ww=1:length(w)
 
     TTT=zeros(NS2,length([T TW TF]));
     CPxTNS=ones(NS2,length([minE:maxE])); % initialize cumulative prob.
-    PxTNS=ones(NS2,length([minE:maxE])); % initialize daily prob.
+    %PxTNS=ones(NS2,length([minE:maxE])); % initialize daily prob.
     for ii=minE:maxE
         if(ii>=INDX)
            wtc=mincfw*w(ww); 
@@ -85,16 +85,15 @@ parfor ww=1:length(w)
        for mm=1:NS2
            f=find(TBNS(mm,:)>ii); % find those liekly in infected period (THIS TAKES CARE OF TRAVEL BAN)
           g=find(E(mm,f)<=ii); % find thos that are in infected period (WONT TAKE PEOPLE IN TRAVEL BAN e.g. if travel ban is ii the ywill not be selected in line above)
-          dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte the probability of each case
-          PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt)); % calaculte total probabaility 
-          TTT(mm,f(g))=TTT(mm,f(g))+dt;
-          dts=(1-prod(1-TTT(mm,:))); % calcualte probability for eahc
-          CPxTNS(mm,ii-(minE)+1)=CPxTNS(mm,ii-(minE)+1).*dts; % put to cumualtive
+          %dt=wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g))); % calcualte the probability of each case
+%           PxTNS(mm,ii-(minE)+1)=PxTNS(mm,ii-(minE)+1).*(1-prod(1-dt)); % calaculte total probabaility 
+          TTT(mm,f(g))=TTT(mm,f(g))+wtc.*ptravel*(1-ptravel).^(ii-E(mm,f(g)));
+          CPxTNS(mm,ii-(minE)+1)=(1-prod(1-TTT(mm,:))); % put to cumualtive
        end
     end
     % Calcualte the means
     MLE(ww,:)=mean(CPxTNS,1);
-    MLEP(ww,:)=mean(PxTNS,1); 
+    %MLEP(ww,:)=mean(PxTNS,1); 
 end
 % Save controu map
-save('Weighted_Travel_Infectious.mat','MLE','w','MLEP');
+save('Weighted_Travel_Infectious.mat','MLE','w');

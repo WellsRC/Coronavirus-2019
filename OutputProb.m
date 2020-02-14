@@ -1,7 +1,7 @@
 clc;
 clear;
 %% Probabaility of Travel
-load('Probability_Travel_Infection.mat')
+load('Probability_Travel_Infection_6733.mat')
 fprintf('============================================================ \n');
 fprintf('Probability of travel \n');
 fprintf('============================================================ \n');
@@ -17,7 +17,7 @@ end
 fprintf('Probability of travel: %5.4f (95%% CI: %5.4f - %5.4f) \n',[pc(F==max(F)) prctile(spc,[2.5 97.5])]);
 fprintf('Under Reprting: %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n',100.*[1-0.005./pc(F==max(F)) 1-0.005./prctile(spc,[2.5 97.5])]);
 clear;
-load('Probability_Travel_Infection_Hospt.mat');
+load('Probability_Travel_Hospital_6733.mat');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 r=rand(10^4,1);
@@ -31,16 +31,16 @@ fprintf('Probability of travel (Hospt.): %5.4f (95%% CI: %5.4f - %5.4f) \n',[pc(
 fprintf('Under Reprting: %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n',100.*[1-0.005./pc(F==max(F)) 1-0.005./prctile(spc,[2.5 97.5])]);
 clear;
 %% Probability travel periods
-fprintf('============================================================ \n');
-fprintf('General estimates \n');
-fprintf('============================================================ \n');
-load('TravelDuringInfection.mat')
-fprintf('Probability of travel during incubation: %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLE prctile(L,[2.5 97.5])]);
-fprintf('Probability of travel during incubation and time to medical vist (before Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENS prctile(LNS,[2.5 97.5])]);
-fprintf('Probability of travel during incubation and time to medical vist (after Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSA prctile(LNSA,[2.5 97.5])]);
-fprintf('Probability of travel during incubation and time to hospital vist (before Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSH prctile(LNSH,[2.5 97.5])]);
-fprintf('Probability of travel during incubation and time to hospital vist (after Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSHA prctile(LNSHA,[2.5 97.5])]);
-clear;
+%fprintf('============================================================ \n');
+%fprintf('General estimates \n');
+%fprintf('============================================================ \n');
+%load('TravelDuringInfection.mat')
+%fprintf('Probability of travel during incubation: %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLE prctile(L,[2.5 97.5])]);
+%fprintf('Probability of travel during incubation and time to medical vist (before Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENS prctile(LNS,[2.5 97.5])]);
+%fprintf('Probability of travel during incubation and time to medical vist (after Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSA prctile(LNSA,[2.5 97.5])]);
+%fprintf('Probability of travel during incubation and time to hospital vist (before Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSH prctile(LNSH,[2.5 97.5])]);
+%fprintf('Probability of travel during incubation and time to hospital vist (after Jan 1): %2.1f%% (95%% CI: %2.1f%% - %2.1f%%) \n',100.*[MLENSHA prctile(LNSHA,[2.5 97.5])]);
+%clear;
 %% Temporal
 fprintf('============================================================ \n');
 fprintf('Epidemic \n');
@@ -102,7 +102,7 @@ fprintf('Percentage of all infections travel over incubation period (Travel Ban)
 Temp2=sum(UMLExS,2);
 fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
 
-EndDateofSim = datenum('1-31-2020');
+EndDateofSim = datenum('2-11-2020');
 TB = datenum('01-23-2020');% Start date
 NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
 T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);
@@ -128,7 +128,14 @@ UT=mean(UMLExTNS(:,end-(EndDateofSim-TB):end),2);
 UNT=mean(UMLExNS(:,end-(EndDateofSim-TB):end),2);
 fprintf(['Cases per day Travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[T prctile(UT,[2.5 97.5])]);
 fprintf(['Cases per day No travel ban (Starting Jan 23): %3.0f (95%% CI: %3.0f - %3.0f) \n'],[NT prctile(UNT,[2.5 97.5])]);
-fprintf(['Cases per day No travel ban (Starting Jan 23): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n'],100.*[(NT-T)./NT prctile((UNT-UT)./UNT,[2.5 97.5])]);
+
+NT=mean(1-MLExTNS(end-(EndDateofSim-TB):end)./MLExNS(end-(EndDateofSim-TB):end),2); % MEAN Daily reduction
+%T=mean(MLExTNS(end-(EndDateofSim-TB):end),2);
+
+UT=mean(1-UMLExTNS(:,end-(EndDateofSim-TB):end)./UMLExNS(:,end-(EndDateofSim-TB):end),2); % Mean daily reduction
+% UNT=mean(UMLExNS(:,end-(EndDateofSim-TB):end),2);
+
+fprintf(['Cases per day No travel ban (Starting Jan 23): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n'],100.*[NT prctile(UT,[2.5 97.5])]);
 
 clear;
 
@@ -174,7 +181,7 @@ fprintf('============================================================ \n');
 fprintf('Epidemic (Hosptialization)\n');
 fprintf('============================================================ \n');
 startDateofSim = datenum('12-06-2019');% Start date
-load('Daily_Prob_Expect_Hospt.mat');
+load('Daily_Prob_Expect_Hospital.mat');
 Temp=sum(UMLExTS,2);
 Temp2=sum(UMLExTNS,2);
 fprintf('Percentage of exported travel during incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./sum(MLExTNS) prctile(Temp./Temp2,[2.5 97.5])],1));
@@ -229,7 +236,7 @@ fprintf('Percentage of all infections travel over incubation period (Travel Ban)
 Temp2=sum(UMLExS,2);
 fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
 
-EndDateofSim = datenum('1-31-2020');
+EndDateofSim = datenum('2-11-2020');
 TB = datenum('01-23-2020');% Start date
 NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
 T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);

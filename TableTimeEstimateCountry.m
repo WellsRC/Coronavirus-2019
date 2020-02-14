@@ -15,7 +15,7 @@ maxE=68;
         EsT(ii,3)=([(minE+1):maxE]*PP);
         EsT(ii,5)=sqrt(([(minE+1):maxE]).^2*PP-(EsT(ii,3)).^2);
         EsT(ii,1)=FC{ii,2};
-        EsT(ii,2)=wt;
+        EsT(ii,2)=w(ii);
     end
 f1=fopen('DatesofExportation.txt','w');
 startDateofSim = datenum('12-06-2019');% Start date

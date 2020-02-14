@@ -32,7 +32,7 @@ for ii=1:length(IncH(:,1))
 end
 
 % Load the probability of travel that was calibrated
-load('Probability_Travel_Infection.mat','F','pc');
+load('Probability_Travel_Infection_6733.mat','F','pc');
 ptravel=pc(F==max(F)); % set to the mle
 
 % Index times of Key events

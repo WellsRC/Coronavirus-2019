@@ -1,165 +1,61 @@
-clear;
-clc;
-CC=[hex2rgb('#2D4262');hex2rgb('#F5BE41');];
+%% Country level risk assesment
+close all;
+load('Probability_Travel_Infection_6733.mat','F','pc');
+ptravel=pc(F==max(F));
+figure('units','normalized','outerposition',[0 0 1 1]);
 
-CCT=[hex2rgb('#20948B')];
+[IncC,IncW,IncO]=IncidenceData;
+I=cumsum(IncC(:,2)+IncW(:,2)+IncO(:,2));
+load('Weighted_Travel_Infectious_6733.mat');
+minE=-22;
+maxE=68;
 
+startDateofSim = datenum('12-06-2019');% Start date
+XTL=datestr([startDateofSim+[0:1:(maxE-1)]],'mm-dd-yy');
 
 INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
-INDXMV=datenum('01-1-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
 
-load('Daily_Prob_Expect.mat');
+contourf([(minE+1):maxE],ptravel.*w,log10(abs(MLE(:,2:end)-MLE(:,1:end-1))),[-5:1:-1],'LineStyle','none');
+box off;
+xlim([1 maxE]);
+ylim([0 0.5*10^(-3)]);
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'Xtick',[1:1:maxE],'XTicklabel',XTL,'Xminortick','on','Yminortick','on','YTick',[0:0.2:2]*10^(-4));
+xtickangle(45);
+xlabel('Date','Fontsize',18);
+%title({'Probability of exportation since start of outbreak'},'Fontsize',18);%
+yhh=ylabel('Country level probability of travel per day','Fontsize',18);
+y=colorbar;
+yhC=ylabel(y,{'Risk of initial importation event','(Probability)'});
+yhC.Rotation=270;
+yhC.Position=[5.88,mean([[-5 -1]]),0];
+y.Position=[0.913738733818127,0.133738601823708,0.011204481792717,0.79128672745694];
+y.Limits=[-5 -1];
+y.Ticks=[-5:-1];
+y.TickLabels={'10^{-5}','10^{-4}','10^{-3}','10^{-2}','10^{-1}'};
+load('ColorM','CMC');
+colormap(CMC)
 
-startDateofSim = datenum('12-06-2019');% Start date
-XTL=datestr([startDateofSim+[0:4:(maxE-1)]],'mm-dd-yy');
 
-figure('units','normalized','outerposition',[0 0 1 1]);
-
-subplot('Position',[0.045,0.165,0.283865546218487,0.3]); 
-
-b=bar([minE:maxE],[MLExS;MLExNS-(MLExS)]','stacked','LineStyle','none'); hold on;
-
-for ii=1:2
-        b(ii).FaceColor = 'flat';
-        b(ii).CData = CC(ii,:);
+hold on
+xlim([30 57])
+ylim([0 2*10^(-4)])
+load('Weight_Flights');
+Cor=zeros(9,2);
+for ii=1:length(FC)
+    tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
+    scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
+%      if((ii==20))
+%          text((FC{ii,2}-1)-0.2,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11,'HorizontalAlignment','right');
+% %     elseif(ii==9)        
+% %         text((FC{ii,2}-1)+0.015,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11);
+%      else
+        text((FC{ii,2}-1)+0.06,(FlightAll{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
+%      end
+    Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
 end
-    
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-
-xtickangle(45);
-xlim([1 maxE+0.5])
-ylim([0 25]);
-title('No travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
-legend boxoff;
-yh=ylabel({'Number of exported cases'},'Fontsize',18);
-
-text(yh.Extent(1),max(ylim)*1.1,'D','Fontsize',32,'FontWeight','bold');
-
-
-subplot('Position',[0.367+0.01,0.165,0.283865546218487,0.3]); 
-
-b=bar([minE:maxE],[MLExTS;MLExTNS-(MLExTS)]','stacked','LineStyle','none'); hold on
-
-for ii=1:2
-        b(ii).FaceColor = 'flat';
-        b(ii).CData = CC(ii,:);
-end
-    
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-xtickangle(45);
-xlim([1 maxE+0.5])
-ylim([0 25]);
-title('Travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
-legend boxoff;
-yh=ylabel({'Number of exported cases'},'Fontsize',18);
-
-text(yh.Extent(1),max(ylim)*1.1,'E','Fontsize',32,'FontWeight','bold');
-
-subplot('Position',[0.689+0.02,0.165,0.283865546218487,0.3]); 
-
-b=bar([minE:maxE],[MLExS-MLExTS;(MLExNS-(MLExTNS))-(MLExS-MLExTS)]','stacked','LineStyle','none'); hold on;
-
-for ii=1:2
-        b(ii).FaceColor = 'flat';
-        b(ii).CData = CC(ii,:);
-end
-    
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 25],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-xtickangle(45);
-xlim([1 maxE+0.5])
-ylim([0 25]);
-title('Cases averted by travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
-legend boxoff;
-yh=ylabel({'Number of exported cases'},'Fontsize',18);
-
-text(yh.Extent(1),max(ylim)*1.1,'F','Fontsize',32,'FontWeight','bold');
-
-subplot('Position',[0.045,0.64,0.283865546218487,0.3]); 
-%plot([minE:(INDX)],MPTS(1:(1+INDX-minE)),'color',CC(1,:),'LineWidth',2); hold on
-plot([minE:(INDX)],MPTNS(1:(1+INDX-minE)),'color',CCT(1,:),'LineWidth',2); hold on
-
-
-%plot([(INDX):maxE],MPTS((1+INDX-minE):end),'-.','color',CC(1,:),'LineWidth',2); hold on
-plot([(INDX):maxE],MPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2); 
-
-% LB=prctile(UMPTNS,2.5);
-% UB=flip(prctile(UMPTNS,97.5));
-% patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
-
-yhB=ylabel({'Probability'},'Fontsize',18);
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-xtickangle(45);
-xlim([1 maxE])
-ylim([0 1]);
-title('Daily risk of exportation','Fontsize',18);
-text(yhB.Extent(1),max(ylim)*1.1,'A','Fontsize',32,'FontWeight','bold');
-
-%legend({'Incubation','Infected'},'Location','NorthWest');
-%legend boxoff;
-
-subplot('Position',[0.367+0.01,0.64,0.283865546218487,0.3]); 
-
-%plot([minE:maxE],MCPTS,'color',CC(1,:),'LineWidth',2); hold on
-plot([minE:(INDX)],MCPTNS(1:(1+INDX-minE)),'color',CCT(1,:),'LineWidth',2); hold on
-plot([(INDX):maxE],MCPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2); hold on
-
-% LB=prctile(UMCPTNS,2.5);
-% UB=flip(prctile(UMCPTNS,97.5));
-% patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
-plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-
-yhB=ylabel({'Probability'},'Fontsize',18);
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-xtickangle(45);
-xlim([1 maxE])
-ylim([0 1]);
-title({'Cumulative risk of exportation'},'Fontsize',18);
-text(yhB.Extent(1),max(ylim)*1.1,'B ','Fontsize',32,'FontWeight','bold');
-
-% legend({'Incubation','Infected'},'Location','NorthWest');
-% legend boxoff;
-
-subplot('Position',[0.689+0.02,0.64,0.283865546218487,0.3]); 
-TT=MCPTNS(2:end)-MCPTNS(1:end-1);
-
-plot([(minE+1):(INDX)],TT(1:(1+INDX-(minE+1))),'color',CCT(1,:),'LineWidth',2); hold on
-plot([(INDX):maxE],TT((1+INDX-(minE+1)):end),'-.','color',CCT(1,:),'LineWidth',2); hold on
-
-plot([INDX INDX],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-
-% LB=prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),2.5);
-% UB=flip(prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),97.5));
-% patch([[(minE+1):maxE] flip([(minE+1):maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
-
-yhB=ylabel({'Probability'},'Fontsize',18);
-xlabel('Date','Fontsize',18);
-box off;
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on','YTick',[0:0.01:0.1]);
-xtickangle(45);
-xlim([1 maxE])
-ylim([0 0.1]);
-title({'Risk of initial exportation event'},'Fontsize',18);
-text(yhB.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
+plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+plot([INDX2 INDX2],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+[r,p]=corr(Cor)
+%text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);
 clear;

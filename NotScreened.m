@@ -7,7 +7,7 @@ wtc=1-[FlightAll{tf,2}];
 % Obtain the pdf for the incubation period
 [~,Ipdf] = IncubationDist(5.2,0); 
 % Obtain the probabaility of travel
-load('Probability_Travel_Infection.mat','F','pc');
+load('Probability_Travel_Infection_6733.mat','F','pc');
 w=exp(F)./sum(exp(F)); % likelihood weight
 wc=cumsum(w); % cumulative sum ofr sampling
 ptravel=pc(F==max(F)); % Set travel probabaility

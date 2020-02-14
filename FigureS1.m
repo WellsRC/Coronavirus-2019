@@ -77,7 +77,7 @@ TBNS(:,(length(T)+1):(length(T)+length(TW)))=min(TBNS(:,(length(T)+1):(length(T)
 TBNS(:,(length(T)+length(TW)+1):end)=min(TBNS(:,(length(T)+length(TW)+1):end),INDX2); % Restrict time based on the min of time of first medical and travel ban in Hubei
 
 % Load calibrate dprobability
-load('Probability_Travel_Infection.mat','F','pc');
+load('Probability_Travel_Infection_6733.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 
@@ -155,3 +155,6 @@ xlabel({'Date'},'Fontsize',18);
 %Plot travel bans
 plot([INDX INDX],[0 30],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 30],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+load('ReportedTimeIncidence.mat')
+hold on;
+scatter(RepI(:,1),RepI(:,2),40,'b','filled');

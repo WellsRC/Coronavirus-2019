@@ -11,7 +11,7 @@ mun=gamrnd(gp,5.2/gp,NS1,1);
 
 Test=zeros(22,1);
 
-load('Probability_Travel_Infection.mat','F','pc');
+load('Probability_Travel_Infection_6733.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
 

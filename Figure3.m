@@ -1,61 +1,82 @@
-%% Country level risk assesment
 close all;
-load('Probability_Travel_Infection.mat','F','pc');
-ptravel=pc(F==max(F));
+clear;
+CIP=hex2rgb('#2D4262');
+CC=[hex2rgb('#F5BE41');hex2rgb('#CB0000');];
+figure('units','normalized','outerposition',[0 0 1 1]);
+load('Time_Screening.mat');
+subplot('Position',[0.367+0.01,0.653,2.*0.283865546218487,0.3]); 
+plot([1:14],MLET,'color',CIP(1,:),'LineWidth',2); hold on
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[0:14],'Xminortick','on','Yminortick','on');
+
+LB=prctile(UMLET,2.5);
+UB=flip(prctile(UMLET,97.5));
+patch([[1:14] flip([1:14])],[LB UB],CIP,'LineStyle','none','Facealpha',0.35);
+box off
+xlim([1 14])
+ylim([0 1]);
+yh=ylabel({'Probability of identification'},'Fontsize',18);
+xlabel('Days since exposure (infection)','Fontsize',18);
+
+text(-0.66,max(ylim)*1.1,'B','Fontsize',32,'FontWeight','bold');
+
+load('TravelDuringInfection.mat')
+
+
+subplot('Position',[0.367+0.01,0.21,2.*0.283865546218487,0.3]); 
+plot([0:14],(MLE-MLECT)./MLE,'color',CIP(1,:),'LineWidth',2); hold on;
+
+LB=prctile((L-LCT)./L,2.5);
+UB=flip(prctile((L-LCT)./L,97.5));
+patch([[0:14] flip([0:14])],[LB UB],CIP,'LineStyle','none','Facealpha',0.35);
+set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[0:14],'Xminortick','on','Yminortick','on');
+box off
+xlim([0 14])
+ylim([0 1]);
+yh=ylabel({'Reduction in the probability of',' travel during incubation period'},'Fontsize',18);
+xlabel('Days from infection to quarantine','Fontsize',18);
+
+text(yh.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
+
+
 figure('units','normalized','outerposition',[0 0 1 1]);
 
-[IncC,IncW,IncO]=IncidenceData;
-I=cumsum(IncC(:,2)+IncW(:,2)+IncO(:,2));
-load('Weighted_Travel_Infectious.mat');
-minE=-22;
-maxE=57;
+subplot('Position',[0.367+0.01,0.21,2.*0.283865546218487,0.3]); 
+load('Time_After_Arrival.mat','UMLE','UMLET','MLE','MLET')
 
-startDateofSim = datenum('12-06-2019');% Start date
-XTL=datestr([startDateofSim+[0:1:(maxE-1)]],'mm-dd-yy');
-
-INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
-INDX2=datenum('01-25-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero
-
-contourf([(minE+1):maxE],ptravel.*w,log10(abs(MLE(:,2:end)-MLE(:,1:end-1))),[-5:1:-1],'LineStyle','none');
+% MLET is the time from arrival to symptom onset
+histogram(UMLET,100,'LineStyle','none','FaceAlpha',0.3,'FaceColor',CC(1,:)); hold on
+histogram(UMLE+MLET,100,'LineStyle','none','FaceAlpha',0.3,'FaceColor',CC(2,:)); hold on
 box off;
-xlim([1 maxE]);
-ylim([0 0.5*10^(-3)]);
-set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'Xtick',[1:1:maxE],'XTicklabel',XTL,'Xminortick','on','Yminortick','on','YTick',[0:0.5:4]*10^(-4));
-xtickangle(45);
-xlabel('Date','Fontsize',18);
-%title({'Probability of exportation since start of outbreak'},'Fontsize',18);%
-yhh=ylabel('Probability of travel per day','Fontsize',18);
-y=colorbar;
-yhC=ylabel(y,{'Risk of initial importation event','(Probability)'});
-yhC.Rotation=270;
-yhC.Position=[4.452698026384615,mean([[-5 -1]]),0];
-y.Position=[0.913738733818127,0.133738601823708,0.011204481792717,0.79128672745694];
-y.Limits=[-5 -1];
-y.Ticks=[-5:-1];
-y.TickLabels={'10^{-5}','10^{-4}','10^{-3}','10^{-2}','10^{-1}'};
-load('ColorM','CMC');
-colormap(CMC)
-
-
-hold on
-xlim([30 57])
-ylim([0 4.4*10^(-4)])
-load('Weight_Flights');
-Cor=zeros(9,2);
-for ii=1:length(FC)
-    tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
-    scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
-%      if((ii==20))
-%          text((FC{ii,2}-1)-0.2,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11,'HorizontalAlignment','right');
-% %     elseif(ii==9)        
-% %         text((FC{ii,2}-1)+0.015,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11);
-%      else
-        text((FC{ii,2}-1)+0.06,(FlightAll{tf,2}*ptravel)+0.0000045,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
-%      end
-    Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
+ax1=gca;
+ax1.YAxis.Visible = 'off';
+ylim([0 380]);
+xlim([-3 9]);
+set(gca,'LineWidth',2,'tickdir','out','XTick',[-3:9],'XTickLabel',{'','','','Arrival','','','Symptom onset','','','','First transmission event','',''},'Fontsize',18);
+plot(linspace(0,MLET,2),[360 360], 'k','LineWidth',2); 
+text(mean([0 MLET]), 380, [num2str(round(MLET,1)) ,' days'],'Fontsize',16,'HorizontalAlignment','center');
+plot([0 0],[355 365], 'k','LineWidth',2); 
+plot([MLET MLET],[355 365], 'k','LineWidth',2); 
+plot(linspace(MLET,MLET+MLE,2),[360 360], 'k','LineWidth',2); 
+plot([MLET+MLE MLET+MLE],[355 365], 'k','LineWidth',2); 
+plot([MLET MLET],[355 365], 'k','LineWidth',2); 
+text(mean([MLET MLET+MLE]), 380, [num2str(round(MLE,1)) ,' days'],'Fontsize',16,'HorizontalAlignment','center');
+load('ArrivalToSymptomOnset.mat');
+C=unique(ATtoSO);
+mm=0;
+for ii=1:length(C)   
+    f=find(ATtoSO==C(ii)); 
+    if(length(f)>mm)
+        mm=length(f);
+    end
 end
-plot([INDX INDX],[0 4.4*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-plot([INDX2 INDX2],[0 4.4*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-[r,p]=corr(Cor);
-%text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);
-clear;
+ dy=linspace(87.500,262.5000,mm);
+for ii=1:length(C)
+    f=find(ATtoSO==C(ii)); 
+    if(C(ii)<=0)
+        scatter(C(ii).*ones(length(f),1),dy(1:length(f)),40,CC(1,:),'filled');
+    else
+        scatter(C(ii).*ones(length(f),1),dy(1:length(f)),40,CIP(1,:),'filled');
+    end
+end
+text(-4.53,max(ylim)*1.1,'D','Fontsize',32,'FontWeight','bold');
+text(-2,100,'A','Fontsize',32,'FontWeight','bold');
