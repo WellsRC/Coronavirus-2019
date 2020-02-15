@@ -43,19 +43,21 @@ ylim([0 2*10^(-4)])
 load('Weight_Flights');
 Cor=zeros(9,2);
 for ii=1:length(FC)
-    tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
-    scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
-%      if((ii==20))
-%          text((FC{ii,2}-1)-0.2,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11,'HorizontalAlignment','right');
-% %     elseif(ii==9)        
-% %         text((FC{ii,2}-1)+0.015,(FlightAll{tf,2}*ptravel),15,{FC{ii,1}},'Fontsize',11);
-%      else
+    if(FC{ii,2}>=INDX)
+        tf = strcmp({FC{ii,1}},{Flight_NW{:,1}});
+        scatter(FC{ii,2}-1,Flight_NW{tf,2}*ptravel,25,'k','filled'); hold on;
+        text((FC{ii,2}-1)+0.06,(Flight_NW{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
+        Cor(ii,:)=[Flight_NW{tf,2} (FC{ii,2}-1)];
+    else
+        tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
+        scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
         text((FC{ii,2}-1)+0.06,(FlightAll{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
-%      end
-    Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
+        Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
+    end
 end
 plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 [r,p]=corr(Cor)
+round(p(2,1),3)
 %text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);
 clear;
