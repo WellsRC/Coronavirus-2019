@@ -118,9 +118,9 @@ parfor mm=1:length(pc)
           UxT2(zz,ii)=UxT2(zz,ii)+sum(dt); % expected value
        end
     end    
-    M1=poisspdf(IncOutside',mean(UxT,1)); % calculate the likelihood at each point
-    M2=poisspdf(RepI',mean(UxT2,1)); % calculate the likelihood at each point
-    F(mm)=(20/30).*sum(log(M1))+(10/30).*sum(log(M2)); %sum the log likelihood
+    M1=poisspdf(IncOutside',mean(UxT,1)); % calculate the likelihood at each point for date of onset for those who travel during incubation period
+    M2=poisspdf(RepI',mean(UxT2,1)); % calculate the likelihood at each point for reported data for those who travell during sympmatic period
+    F(mm)=(20/30).*sum(log(M1))+(10/30).*sum(log(M2)); %sum the log likelihood (Weighted to account for those who travel during incubation period and those who travell during symptkmatic period)
 end
 %plot(pc,F)
 save('Probability_Travel_Infection_6733.mat','F','pc');
