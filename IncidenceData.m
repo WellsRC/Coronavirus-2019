@@ -1,5 +1,5 @@
 function [IncCF,IncWF,IncHF,IncOF]=IncidenceData
-ENDINDX=datenum('02-11-2020')-datenum('12-6-2019'); % If we had a data point for Dec 6 it would have the time stamp of day zero, where Dec 8 would have a week index of two
+ENDINDX=datenum('02-15-2020')-datenum('12-6-2019'); % If we had a data point for Dec 6 it would have the time stamp of day zero, where Dec 8 would have a week index of two
 IncCF=zeros(ENDINDX+1,2); % China 
 IncWF=zeros(ENDINDX+1,2); % Wuhan
 IncHF=zeros(ENDINDX+1,2); % Hubei

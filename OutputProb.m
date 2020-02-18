@@ -46,7 +46,7 @@ fprintf('============================================================ \n');
 fprintf('Epidemic \n');
 fprintf('============================================================ \n');
 startDateofSim = datenum('12-06-2019');% Start date
-load('Daily_Prob_Expect.mat');
+load('Daily_Prob_Expect_6733.mat');
 Temp=sum(UMLExTS,2);
 Temp2=sum(UMLExTNS,2);
 fprintf('Percentage of exported travel during incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./sum(MLExTNS) prctile(Temp./Temp2,[2.5 97.5])],1));
@@ -181,7 +181,7 @@ fprintf('============================================================ \n');
 fprintf('Epidemic (Hosptialization)\n');
 fprintf('============================================================ \n');
 startDateofSim = datenum('12-06-2019');% Start date
-load('Daily_Prob_Expect_Hospital.mat');
+load('Daily_Prob_Expect_Hospital_6733.mat');
 Temp=sum(UMLExTS,2);
 Temp2=sum(UMLExTNS,2);
 fprintf('Percentage of exported travel during incubation period (Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExTS)./sum(MLExTNS) prctile(Temp./Temp2,[2.5 97.5])],1));
