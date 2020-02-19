@@ -8,7 +8,7 @@ figure('units','normalized','outerposition',[0 0 1 1]);
 I=cumsum(IncC(:,2)+IncW(:,2)+IncO(:,2));
 load('Weighted_Travel_Infectious_6733.mat');
 minE=-22;
-maxE=68;
+maxE=72;
 
 startDateofSim = datenum('12-06-2019');% Start date
 XTL=datestr([startDateofSim+[0:1:(maxE-1)]],'mm-dd-yy');
