@@ -1,7 +1,6 @@
 # Impact of international travel and border control measures on the global spread of the novel 2019 Coronavirus outbreak 
  
 ## Data
-mat files
 
 DailyIncidenceOther-WHO-Dec62019=t0.mat - Date of symptom onset of international cases with travel history to China
 
