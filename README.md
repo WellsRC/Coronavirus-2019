@@ -16,7 +16,7 @@ ReportedIncidenceChina-Dec62019=t0.mat	- Date of report of cases in China (outsi
 
 ReportedTimeIncidence.mat - Date of report for all international cases with travel history to China
 
-ArrivalToSymptomOnset.mat - Day index of the arival of a countries first case by plane
+ArrivalToSymptomOnset.mat - Day index of the arrival of a country's first case by plane
 
 TimetoHospitalJan1onward.mat -Digitized data for time from symptom onset to hospitalization (Jan. 1 2020, onward)
 
@@ -28,7 +28,7 @@ TimetoMedVisituptoDec31.mat	-Digitized data for time from symptom onset to first
 
 Weight_Flights.mat - The flight weights for all flights out of China and all flights out of China except Wuhan
 
-IncidenceData.m - Returns incidence data for Wuhan, Hubei, China, and international cases with travel hisotry to China. The time of sypmtom onset is approximated by sampling the time to first medical vist (Jan 1. onward) for cases with only date of report.
+IncidenceData.m - Returns incidence data for Wuhan, Hubei, China, and international cases with travel history to China. The time of symptom onset is approximated by sampling the time to first medical visit (Jan 1. onward) for cases with only date of report.
 
 ## Distributions
 
@@ -44,13 +44,13 @@ TimeMedJan1.m	- Returns S samples from the distribution for the time from sympto
 
 ## Fitting
 
-CPIPT.m - Estimates the probability of travel used in the analysis using the time from symptom onset to first medical vist
+CPIPT.m - Estimates the probability of travel used in the analysis using the time from symptom onset to first medical visit
 
 CPHPT.m - Estimates the probability of travel used in the analysis using the time from symptom onset to hospitalization
 
 ## Analysis
 
-DPCA.m - Runs the analysis needed for Figure1 using the time from symptom onset to first medical vist
+DPCA.m - Runs the analysis needed for Figure1 using the time from symptom onset to first medical visit
 
 DPHA.m - Runs the analysis needed for Figure1 using the time from symptom onset to hospitalization
 
@@ -62,7 +62,7 @@ TimeAfterArival.m - Computes the time from arrival by plane to symptom onset, as
 
 NotScreened.m - Computes the probability of a case in their incubation period travelling under various levels of contact tracing
 
-HealthSurveyScreen.m - Computes the probability of indentifying a case travelling in the incubation period based on asking the time from their last exposure.
+HealthSurveyScreen.m - Computes the probability of identifying a case travelling in the incubation period based on asking the time from their last exposure.
 
 ## Output
 
