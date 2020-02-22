@@ -55,8 +55,10 @@ for ii=1:length(FC)
         Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
     end
 end
-plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+pp=plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+legend(pp,'Enforcement of lockdown');
+legend boxoff;
 [r,p]=corr(Cor)
 round(p(2,1),3)
 %text(30.5,4.4*10^(-4)*0.95,['r=' num2str(round(r(1,2),2)) ' (p=' num2str(round(p(1,2),3)) ')'],'Fontsize',16);

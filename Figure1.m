@@ -34,8 +34,6 @@ xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 50]);
 title('No travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
-legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
 text(yh.Extent(1),max(ylim)*1.1,'D','Fontsize',32,'FontWeight','bold');
@@ -53,13 +51,14 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+pp=plot([INDX INDX],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+legend([b pp],{'Incubation','Symptomatic','Enforcement of lockdown'},'Location','NorthWest');
 plot([INDX2 INDX2],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 50]);
 title('Travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
+legend([b pp],{'Incubation','Symptomatic','Enforcement of lockdown'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
@@ -77,13 +76,13 @@ end
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+pp=plot([INDX INDX],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 50],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE+0.5])
 ylim([0 50]);
 title('Cases averted by travel lockdown','Fontsize',18);
-legend(b,{'Incubation','Symptomatic'},'Location','NorthWest');
+legend([b pp],{'Incubation','Symptomatic','Enforcement of lockdown'},'Location','NorthWest');
 legend boxoff;
 yh=ylabel({'Number of exported cases'},'Fontsize',18);
 
@@ -99,20 +98,22 @@ plot([(INDX):maxE],MPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2)
 
  LB=prctile(UMPTNS,2.5);
  UB=flip(prctile(UMPTNS,97.5));
- patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);
 box off;
 set(gca,'LineWidth',2,'tickdir','out','Fontsize',16,'XTick',[1:4:maxE],'XTickLabel',XTL,'Xminortick','on','Yminortick','on');
-plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+pp=plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+
 plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 xtickangle(45);
 xlim([1 maxE])
 ylim([0 1]);
 title('Daily risk of exportation','Fontsize',18);
 text(yhB.Extent(1),max(ylim)*1.1,'A','Fontsize',32,'FontWeight','bold');
-
+legend([pp],{'Enforcement of lockdown'},'Location','NorthWest');
+legend box off;
 %legend({'Incubation','Infected'},'Location','NorthWest');
 %legend boxoff;
 
@@ -124,8 +125,8 @@ plot([(INDX):maxE],MCPTNS((1+INDX-minE):end),'-.','color',CCT(1,:),'LineWidth',2
 
  LB=prctile(UMCPTNS,2.5);
  UB=flip(prctile(UMCPTNS,97.5));
- patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
-plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+patch([[minE:maxE] flip([minE:maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+pp=plot([INDX INDX],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
@@ -137,6 +138,8 @@ xlim([1 maxE])
 ylim([0 1]);
 title({'Cumulative risk of exportation'},'Fontsize',18);
 text(yhB.Extent(1),max(ylim)*1.1,'B ','Fontsize',32,'FontWeight','bold');
+legend([pp],{'Enforcement of lockdown'},'Location','NorthWest');
+legend box off;
 
 % legend({'Incubation','Infected'},'Location','NorthWest');
 % legend boxoff;
@@ -147,12 +150,12 @@ TT=MCPTNS(2:end)-MCPTNS(1:end-1);
 plot([(minE+1):(INDX)],TT(1:(1+INDX-(minE+1))),'color',CCT(1,:),'LineWidth',2); hold on
 plot([(INDX):maxE],TT((1+INDX-(minE+1)):end),'-.','color',CCT(1,:),'LineWidth',2); hold on
 
-plot([INDX INDX],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
+pp=plot([INDX INDX],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 0.1],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 
  LB=prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),2.5);
  UB=flip(prctile(UMCPTNS(:,2:end)-UMCPTNS(:,1:end-1),97.5));
- patch([[(minE+1):maxE] flip([(minE+1):maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
+patch([[(minE+1):maxE] flip([(minE+1):maxE])],[LB UB],CCT(1,:),'LineStyle','none','Facealpha',0.35);
 
 yhB=ylabel({'Probability'},'Fontsize',18);
 xlabel('Date','Fontsize',18);
@@ -163,4 +166,6 @@ xlim([1 maxE])
 ylim([0 0.1]);
 title({'Risk of initial exportation event'},'Fontsize',18);
 text(yhB.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
+legend([pp],{'Enforcement of lockdown'},'Location','NorthWest');
+legend box off;
 clear;

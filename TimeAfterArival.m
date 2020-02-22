@@ -16,10 +16,11 @@ mun=gamrnd(gp,5.2/gp,NS1,1);
 
 Incu2=[0:21];
 Test=zeros(22,1);
+%% Compute the time from symptom onset to first transmission evetn
 for ii=0:21 % Incubation period length
     t=0;
    for jj=ii:42
-       t=t+(jj-ii).*nbinpdf(jj,r,p)./(1-nbincdf(ii-1,r,p));
+       t=t+(jj-ii).*nbinpdf(jj,r,p)./(1-nbincdf(ii-1,r,p)); 
    end
    Test(ii+1)=t;
 end

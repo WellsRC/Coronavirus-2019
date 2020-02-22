@@ -1,8 +1,8 @@
 %% Calcualtes produces the contourmap for figure 2
 clear;
-pobj=parpool(10);
+pobj=parpool(20);
 % Determine the weight for flgihts outside of China
-mincfw=1.078800000000000; % median increase in flight weight among all 63 countries outside of china
+mincfw=1.022399999999999; % median increase in flight weight among all 63 countries outside of china
 % Load the incidence data
 [IncC,IncW,IncH,IncO]=IncidenceData;
 % Number of samples to generate
