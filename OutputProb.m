@@ -106,7 +106,7 @@ fprintf('Percentage of all infections travel over incubation period (Travel Ban)
 Temp2=sum(UMLExS,2);
 fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
 
-EndDateofSim = datenum('2-15-2020');
+EndDateofSim = datenum('02-15-2020');
 TB = datenum('01-23-2020');% Start date
 NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
 T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);
@@ -242,7 +242,7 @@ fprintf('Percentage of all infections travel over incubation period (Travel Ban)
 Temp2=sum(UMLExS,2);
 fprintf('Percentage of all infections travel during incubation period (No Travel Ban): %3.1f%% (95%% CI: %3.1f%% - %3.1f%%) \n', round(100.*[sum(MLExS)./NI prctile(Temp2./NI,[2.5 97.5])],1));
 
-EndDateofSim = datenum('2-15-2020');
+EndDateofSim = datenum('02-15-2020');
 TB = datenum('01-23-2020');% Start date
 NT=cumsum(MLExNS(end-(EndDateofSim-TB):end),2);
 T=cumsum(MLExTNS(end-(EndDateofSim-TB):end),2);
