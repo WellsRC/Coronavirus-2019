@@ -38,6 +38,8 @@ load('Weight_Flights.mat','FlightAll')
 tf=strcmp({'China'},{FlightAll{:,1}});
 wtc=1-[FlightAll{tf,2}];
 
+
+%% Time from arrival to symptom onset
 load('Probability_Travel_Infection_6733.mat','F','pc');
 w=exp(F)./sum(exp(F));
 wc=cumsum(w);
