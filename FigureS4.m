@@ -6,7 +6,7 @@ figure('units','normalized','outerposition',[0 0 1 1]);
 
 [IncC,IncW,IncO]=IncidenceData;
 I=cumsum(IncC(:,2)+IncW(:,2)+IncO(:,2));
-load('Weighted_Travel_Infectious_6733.mat');
+load('Weighted_RouteTravel_Infectious_6733.mat');
 minE=-22;
 maxE=72;
 
