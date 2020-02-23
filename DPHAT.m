@@ -1,7 +1,7 @@
 % Runs analysis for Figure 1
 clear;
 
-pobj=parpool(20);
+% pobj=parpool(20);
 % Determine the weight for flgihts outside of China
 load('Weight_Flights.mat','FlightAll','Flight_NW')
 tf=strcmp({'China'},{FlightAll{:,1}});
@@ -145,7 +145,7 @@ MPTNS=mean(PxTNS,1);
 
 MCPTS=mean(CPxTS,1);
 MCPTNS=mean(CPxTNS,1);
-save('Daily_Prob_Expect_Hospital_6733.mat');
+save('Daily_Prob_Expect_Hospital_6733.mat','MLExTS','MLExS','MLExNS','MLExTNS','MPTS','MPS','MPNS','MPTNS','MCPTS','MCPTNS'););
 %% Uncertainty Estimates
 
 UMLExTS=zeros(NS1,length(MLExTS));
@@ -250,5 +250,5 @@ TempZ2=zeros(size(E));
     UMCPTS(ss,:)=mean(CPxTS,1);
     UMCPTNS(ss,:)=mean(CPxTNS,1);
 end
-save('Daily_Prob_Expect_Hospital_6733.mat');
+save('Daily_Prob_Expect_Hospital_6733.mat','UMLExTS','UMLExS','UMLExNS','UMLExTNS','UMPTS','UMPS','UMPNS','UMPTNS','UMCPTS','UMCPTNS','MLExTS','MLExS','MLExNS','MLExTNS','MPTS','MPS','MPNS','MPTNS','MCPTS','MCPTNS'););
 clear;

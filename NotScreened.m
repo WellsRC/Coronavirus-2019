@@ -21,15 +21,6 @@ UIpdf=zeros(NS,length(Ipdf));
 for ii=1:NS
     [~,UIpdf(ii,:)] = IncubationDist(mun(ii),0);
 end
-% Obtaine the pdfs for the different measures 
-load('TimetoMedVisituptoDec31.mat','D')
-MP=D(:,2)./sum(D(:,2));
-load('TimetoMedVisitJan1onward.mat','D')
-MPA=D(:,2)./sum(D(:,2));
-load('TimetoHospitaluptoDec31.mat','D')
-HP=D(:,2)./sum(D(:,2));
-load('TimetoHospitalJan1onward.mat','D')
-HPA=D(:,2)./sum(D(:,2));
 
 % Initialize 
 DI=21; % suratino of incubation period max evalaution

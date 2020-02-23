@@ -1,7 +1,7 @@
 %% Used to calibrate the probability of travel for the simulation (Testing the effect of inclusing the reporting date)
 clear;
 
-pobj=parpool(20);
+pobj=parpool(10);
 % Determine the weight for flgihts outside of China
 load('Weight_Flights.mat')
 tf=strcmp({'China'},{FlightAll{:,1}});

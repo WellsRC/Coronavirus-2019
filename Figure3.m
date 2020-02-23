@@ -35,7 +35,7 @@ ylim([0 1]);
 yh=ylabel({'Reduction in the probability of',' travel during incubation period'},'Fontsize',18);
 xlabel('Days from exposure (infection) to quarantine','Fontsize',18);
 
-text(yh.Extent(1),max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
+text(-1.80981186705021,max(ylim)*1.1,'C','Fontsize',32,'FontWeight','bold');
 
 
 figure('units','normalized','outerposition',[0 0 1 1]);

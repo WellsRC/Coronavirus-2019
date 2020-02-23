@@ -124,3 +124,4 @@ parfor mm=1:length(pc)
 end
 %plot(pc,F)
 save('Probability_Travel_Hospital_6733.mat','F','pc');
+DPHAT;
