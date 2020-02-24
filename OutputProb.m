@@ -87,7 +87,7 @@ VU=sqrt([(minE+1):maxE].^2*PPU'-TU.^2);
 fprintf(['Expected date of first exportation:' datestr(startDateofSim+(T-1),'yyyy-mm-dd') '(95%% CI: ' datestr(startDateofSim+(prctile(TU,2.5)-1),'yyyy-mm-dd') ' to ' datestr(startDateofSim+(prctile(TU,97.5)-1),'yyyy-mm-dd') ') +/- %2.1f (95%% CI: %2.1f - %2.1f) \n'],[V prctile(VU,[2.5 97.5])])
 
 f=find(PP==max(PP));
-
+tt=[(minE+1):maxE];
 lb=prctile(PPU,2.5);
 ub=prctile(PPU,97.5);
 flb=find(lb==max(lb),1);
@@ -225,7 +225,7 @@ VU=sqrt([(minE+1):maxE].^2*PPU'-TU.^2);
 fprintf(['Expected date of first exportation:' datestr(startDateofSim+(T-1),'yyyy-mm-dd') '(95%% CI: ' datestr(startDateofSim+(prctile(TU,2.5)-1),'yyyy-mm-dd') ' to ' datestr(startDateofSim+(prctile(TU,97.5)-1),'yyyy-mm-dd') ') +/- %2.1f (95%% CI: %2.1f - %2.1f) \n'],[V prctile(VU,[2.5 97.5])])
 
 f=find(PP==max(PP));
-
+tt=[(minE+1):maxE];
 lb=prctile(PPU,2.5);
 ub=prctile(PPU,97.5);
 flb=find(lb==max(lb),1);

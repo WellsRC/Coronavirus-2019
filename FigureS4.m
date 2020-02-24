@@ -45,14 +45,14 @@ Cor=zeros(9,2);
 for ii=1:length(FC)
     if(FC{ii,2}>=INDX)
         tf = strcmp({FC{ii,1}},{Flight_NW{:,1}});
-        scatter(FC{ii,2}-1,Flight_NW{tf,2}*ptravel,25,'k','filled'); hold on;
-        text((FC{ii,2}-1)+0.06,(Flight_NW{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
-        Cor(ii,:)=[Flight_NW{tf,2} (FC{ii,2}-1)];
+        scatter(FC{ii,2},Flight_NW{tf,2}*ptravel,25,'k','filled'); hold on;
+        text((FC{ii,2})+0.06,(Flight_NW{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
+        Cor(ii,:)=[Flight_NW{tf,2} (FC{ii,2})];
     else
         tf = strcmp({FC{ii,1}},{FlightAll{:,1}});
-        scatter(FC{ii,2}-1,FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
-        text((FC{ii,2}-1)+0.06,(FlightAll{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
-        Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2}-1)];
+        scatter(FC{ii,2},FlightAll{tf,2}*ptravel,25,'k','filled'); hold on;
+        text((FC{ii,2})+0.06,(FlightAll{tf,2}*ptravel)+0.0000015,15,{FC{ii,1}},'Fontsize',14,'Rotation',45);
+        Cor(ii,:)=[FlightAll{tf,2} (FC{ii,2})];
     end
 end
 pp=plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
