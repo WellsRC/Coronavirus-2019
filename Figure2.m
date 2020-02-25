@@ -26,7 +26,7 @@ xlabel('Date','Fontsize',18);
 %title({'Probability of exportation since start of outbreak'},'Fontsize',18);%
 yhh=ylabel('Country level probability of travel per day','Fontsize',18);
 y=colorbar;
-yhC=ylabel(y,{'Risk of initial importation event','(Probability)'});
+yhC=ylabel(y,{'Risk of initial importation event','(Probability)'},'Fontsize',18);
 yhC.Rotation=270;
 yhC.Position=[5.88,mean([[-5 -1]]),0];
 y.Position=[0.913738733818127,0.133738601823708,0.011204481792717,0.79128672745694];
@@ -57,7 +57,7 @@ for ii=1:length(FC)
 end
 pp=plot([INDX INDX],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
 plot([INDX2 INDX2],[0 2*10^(-4)],'-.','color',[0.7 0.7 0.7],'LineWidth',1.5);
-legend(pp,'Enforcement of lockdown');
+legend(pp,'Enforcement of lockdown','Fontsize',18);
 legend boxoff;
 [r,p]=corr(Cor)
 round(p(2,1),3)

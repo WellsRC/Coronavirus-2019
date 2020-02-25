@@ -4,6 +4,7 @@ EsT=zeros(10,5);
     load(['Weighted_Travel_Infectious_Country.mat']);
     load('Weight_Flights');
 
+INDX=datenum('01-23-2020')-datenum('12-06-2019')+1; % Need to add one since the week index for Dec 6 would be zero 
 minE=-22;
 maxE=72;
     for ii=1:length(FC)
@@ -15,7 +16,11 @@ maxE=72;
         EsT(ii,3)=([(minE+1):maxE]*PP);
         EsT(ii,5)=sqrt(([(minE+1):maxE]).^2*PP-(EsT(ii,3)).^2);
         EsT(ii,1)=FC{ii,2};
-        EsT(ii,2)=w(ii);
+        if(FC{ii,2}>=INDX)
+            EsT(ii,2)=w2(ii);            
+        else
+            EsT(ii,2)=w(ii);
+        end
     end
 f1=fopen('DatesofExportation.txt','w');
 startDateofSim = datenum('12-06-2019');% Start date
@@ -41,8 +46,12 @@ maxE=72;
         EsT(ii,4)=tt(PP==max(PP));
         EsT(ii,3)=([(minE+1):maxE]*PP);
         EsT(ii,5)=sqrt(([(minE+1):maxE]).^2*PP-(EsT(ii,3)).^2);
-        EsT(ii,1)=FC{ii,2};
-        EsT(ii,2)=w(ii);
+        EsT(ii,1)=FC{ii,2};        
+        if(FC{ii,2}>=INDX)
+            EsT(ii,2)=w2(ii);            
+        else
+            EsT(ii,2)=w(ii);
+        end
     end
 f1=fopen('DatesofExportation_Routes.txt','w');
 startDateofSim = datenum('12-06-2019');% Start date

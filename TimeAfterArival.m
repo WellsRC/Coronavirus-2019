@@ -26,7 +26,7 @@ for ii=0:21 % Incubation period length
 end
 [~,pdf] = IncubationDist(5.2,0);
 
-MLE=pdf*Test;
+MLE=pdf*Test; % Multiply by pdf of incubation period to get average
 
 UMLE=zeros(NS1,1);
 for jj=1:NS1
