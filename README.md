@@ -26,9 +26,13 @@ TimetoMedVisitJan1onward.mat	-Digitized data for time from symptom onset to firs
 
 TimetoMedVisituptoDec31.mat	-Digitized data for time from symptom onset to first medical visit (before Jan. 1 2020)
 
-Weight_Flights.mat - The flight weights for all flights out of China and all flights out of China except Wuhan
+Weight_Flights.mat - The flight weights based on the number of airports with for all flights in/out of China and all flights in/out of China except Wuhan
+
+Weight_Flights_Routes.mat - The flight weights based on the number of routes in/out of China and all flights in/out of China except Wuhan
 
 IncidenceData.m - Returns incidence data for Wuhan, Hubei, China, and international cases with travel history to China. The time of symptom onset is approximated by sampling the time to first medical visit (Jan 1. onward) for cases with only date of report.
+
+Exported_Case_Arrival_Final.xlsx - This excel file contains the arrival dates of cases into the various contries and was used to generate Table S5
 
 ## Distributions
 
@@ -48,11 +52,13 @@ CPIPT.m - Estimates the probability of travel used in the analysis using the tim
 
 CPHPT.m - Estimates the probability of travel used in the analysis using the time from symptom onset to hospitalization
 
+CPIPTM.m - Estimates the probability of travel used in the analysis using the time from symptom onset to first medical visit for various amounts of data
+
 ## Analysis
 
-DPCA.m - Runs the analysis needed for Figure1 using the time from symptom onset to first medical visit
+DPCAT.m - Runs the analysis needed for Figure1 using the time from symptom onset to first medical visit
 
-DPHA.m - Runs the analysis needed for Figure1 using the time from symptom onset to hospitalization
+DPHAT.m - Runs the analysis needed for Figure1 using the time from symptom onset to hospitalization
 
 WT.m - Computes the cumulative risk of the importation under a variety of travel weights (Used for Figure 2)
 
@@ -64,6 +70,10 @@ NotScreened.m - Computes the probability of a case in their incubation period tr
 
 HealthSurveyScreen.m - Computes the probability of identifying a case travelling in the incubation period based on asking the time from their last exposure.
 
+WTR.m - Computes the cumulative risk of the importation under a variety of travel weights based on the number of routes (Used for Figure S4)
+
+WTCR.m - Computes the cumulative risk of the importation under the country specific travel weights based on the number of routes
+
 ## Output
 
 OutputProb.m - Outputs the results from all the analysis in text form in the command line
@@ -72,8 +82,14 @@ Figure1.m - Generates Figure 1 in the manuscript
 
 Figure2.m - Generates Figure 2 in the manuscript
 
+Figure3.m - Generates Figure 3B-D in the manuscript
+
 TableTimeEstimateCountry.m - Generates Table 1 results
 
 FigureS1.m - Generates Figure S1
 
 FigureS2.m - Generates Figure S2
+
+FigureS3.m - Generates Figure S3
+
+FigureS4.m - Generates Figure S4
