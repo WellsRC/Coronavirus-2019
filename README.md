@@ -1,6 +1,9 @@
 # Impact of international travel and border control measures on the global spread of the novel 2019 Coronavirus outbreak 
 
 This code was used in the published work "Impact of international travel and border control measures on the global spread of the novel 2019 Coronavirus outbreak" (2020) by Chad R. Wells, Pratha Sah, Seyed M. Moghadas, Abhishek Pandey, Affan Shoukat,  Yaning Wang,  Zheng Wang, Lauren A. Meyers, Burton H. Singer, and Alison P. Galvani (https://www.pnas.org/content/early/2020/03/12/2002616117).
+
+Copyright 2020, Chad Wells et al. All rights reserved. Released under the GNU AGPL 3.
+
 ## Data
 
 DailyIncidenceOther-WHO-Dec62019=t0.mat - Date of symptom onset of international cases with travel history to China
